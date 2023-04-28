@@ -19,7 +19,7 @@ const Room = () => {
     stopProducingVideo,
     stopVideoStream,
     stream: camStream,
-    isProducing,
+    isProducing: cam,
     error: camError,
   } = useVideo();
   const {
@@ -28,6 +28,7 @@ const Room = () => {
     produceAudio,
     stopProducingAudio,
     stream: micStream,
+    isProducing: mic,
     error: micError,
   } = useAudio();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -43,6 +44,13 @@ const Room = () => {
       produceVideo(camStream);
     }
   }, [camStream]);
+
+  useEffect(() => {
+    if (micStream) {
+      setMic(true);
+      produceAudio(micStream);
+    }
+  }, [micStream]);
 
   return (
     <div className="h-screen w-screen flex flex-row justify-start items-center px-24">
@@ -110,6 +118,7 @@ const Room = () => {
                 console.log(camStream.active);
                 setCamera(!cameraOn);
               } else {
+                stopVideoStream();
                 stopProducingVideo();
                 console.log(camStream.active);
                 setCamera(!cameraOn);
@@ -123,6 +132,7 @@ const Room = () => {
             disabled={!micOn}
             action={() => {
               if (micOn == false) {
+                fetchAudioStream()
                 produceAudio(micStream);
                 // console.log(isProducing);
                 setMic(!micOn);
@@ -141,7 +151,7 @@ const Room = () => {
             console.log(peers);
           }}
         >
-          {isProducing ? "producing" : "not producing"}
+          {mic ? "producing" : "not producing"}
         </span>
       </div>
     </div>

@@ -4,14 +4,18 @@ import type { AppProps } from "next/app";
 import { useHuddle01 } from "@huddle01/react";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { configureChains, createClient, WagmiConfig, useAccount } from "wagmi";
-import { filecoinHyperspace } from "wagmi/chains";
+import { configureChains, createClient, WagmiConfig, useAccount, goerli, useProvider } from "wagmi";
+import { filecoinHyperspace, polygonMumbai } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import Context from "../context";
 import { useRouter } from "next/router";
+import { ethers } from "ethers";
+import contractConfig from "../contractConfig";
 
 const { chains, provider } = configureChains(
-  [filecoinHyperspace],
+  // [filecoinHyperspace],
+  [polygonMumbai],
+
   [publicProvider()]
 );
 
@@ -28,15 +32,35 @@ const wagmiClient = createClient({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const currProvider = useProvider();
   const router: any = useRouter();
   const { initialize, isInitialized } = useHuddle01();
   const [roomId, setRoomId] = useState<string>("No Room Id")
+  const [connected, setConnected] = useState<boolean>(false);
+  const [signer, setSigner] = useState();
+  const [contract, setContract] = useState();
+  const [isStreamer, setIsStreamer] = useState<boolean>(false);
   const {isDisconnected} = useAccount()
 
   useEffect(() => {
     // its preferable to use env vars to store projectId
     initialize(process.env.NEXT_PUBLIC_HUDDLE01_PROJECT_ID);
   }, []);
+
+  useEffect(() => {
+    console.log(signer)
+    const settingContract = async () => {
+      const contract: any = new ethers.Contract(
+        contractConfig.address,
+        contractConfig.abi,
+        signer
+      );
+      setContract(contract);
+    };
+    if (signer) {
+      settingContract();
+    }
+  }, [currProvider, signer]);
 
   // useEffect(() => {
   //   router.push("/home")
@@ -47,7 +71,15 @@ function MyApp({ Component, pageProps }: AppProps) {
       <RainbowKitProvider chains={chains}>
         <Context.Provider value={{
           roomId,
-          setRoomId
+          setRoomId,
+          connected,
+          setConnected,
+          contract,
+          setContract,
+          signer,
+          setSigner,
+          isStreamer,
+          setIsStreamer
         }}>
         <Component {...pageProps} />
         </Context.Provider>

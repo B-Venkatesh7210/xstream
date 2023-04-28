@@ -3,7 +3,11 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ["huddle01-assets-frontend.s3.amazonaws.com"],
+    domains: [
+      "huddle01-assets-frontend.s3.amazonaws.com",
+      "gateway.lighthouse.storage",
+      "ipfs.io",
+    ],
   },
 };
 

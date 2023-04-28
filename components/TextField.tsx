@@ -18,7 +18,7 @@ const TextField: React.FC<ITextFieldData> = ({ h, w, font, textSize, type, onCha
           min="0"
           step="1"
           onChange={onChange}
-          className={`flex flex-row justify-start items-start appearance-none outline-none h-[80%] w-[90%] ml-4 overflow-hidden bg-textfield ${textSize}`}
+          className={`mt-2 flex flex-row justify-start items-start appearance-none outline-none h-[80%] w-[90%] ml-4 overflow-hidden ${font} bg-textfield ${textSize}`}
         ></input>
       )}
     </div>
