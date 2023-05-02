@@ -56,7 +56,8 @@ const Home: NextPage = () => {
   return (
     <>
       <ClientOnly>
-        <button
+        
+        {/* <button
           onClick={() => {
             router.push("/home");
           }}
@@ -69,7 +70,7 @@ const Home: NextPage = () => {
           }}
         >
           Sample
-        </button>
+        </button> */}
       </ClientOnly>
     </>
   );

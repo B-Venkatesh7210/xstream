@@ -52,6 +52,10 @@ html {
   border-radius: inherit;
 }
 
+.chatBg{
+  background: linear-gradient(179.91deg, #000000 47.12%, rgba(222, 0, 0, 0.61) 616.15%);
+}
+
 /* Hide scrollbar */
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
@@ -67,4 +71,9 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
+}
+
+.loading {
+  background-color: rgb(228, 179, 229, 0.45);
+  z-index: 99;
 }

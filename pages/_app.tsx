@@ -11,11 +11,10 @@ import Context from "../context";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import contractConfig from "../contractConfig";
+import nftContractConfig from "../nftContractConfig";
 
 const { chains, provider } = configureChains(
-  // [filecoinHyperspace],
-  [polygonMumbai],
-
+  [filecoinHyperspace],
   [publicProvider()]
 );
 
@@ -39,6 +38,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [connected, setConnected] = useState<boolean>(false);
   const [signer, setSigner] = useState();
   const [contract, setContract] = useState();
+  const [nftContract, setNftContract] = useState();
   const [isStreamer, setIsStreamer] = useState<boolean>(false);
   const {isDisconnected} = useAccount()
 
@@ -55,7 +55,13 @@ function MyApp({ Component, pageProps }: AppProps) {
         contractConfig.abi,
         signer
       );
+      const nftContract: any = new ethers.Contract(
+        nftContractConfig.address,
+        nftContractConfig.abi,
+        signer
+      )
       setContract(contract);
+      setNftContract(nftContract);
     };
     if (signer) {
       settingContract();
@@ -79,7 +85,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           signer,
           setSigner,
           isStreamer,
-          setIsStreamer
+          setIsStreamer,
+          nftContract,
+          setNftContract
         }}>
         <Component {...pageProps} />
         </Context.Provider>

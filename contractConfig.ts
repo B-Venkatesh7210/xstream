@@ -1,7 +1,7 @@
 import { IContractConfig } from "./utils/types";
 
 const contractConfig: IContractConfig = {
-  address: "0xb22c2Bcef89B2cB82230fAC6448C4865489C9c0A",
+  address: "0xCAE5B12eEE2F76B828b389A4369656fEb7b32254",
   abi: [
     {
       inputs: [
@@ -13,6 +13,75 @@ const contractConfig: IContractConfig = {
       ],
       stateMutability: "nonpayable",
       type: "constructor",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: "address",
+          name: "sender",
+          type: "address",
+        },
+        {
+          indexed: false,
+          internalType: "string",
+          name: "message",
+          type: "string",
+        },
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "amount",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "bool",
+          name: "isSubscriber",
+          type: "bool",
+        },
+      ],
+      name: "ChatReceived",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "streamId",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "address",
+          name: "streamer",
+          type: "address",
+        },
+      ],
+      name: "StreamStarted",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: false,
+          internalType: "uint256",
+          name: "streamId",
+          type: "uint256",
+        },
+        {
+          indexed: false,
+          internalType: "address",
+          name: "streamer",
+          type: "address",
+        },
+      ],
+      name: "StreamStopped",
+      type: "event",
     },
     {
       inputs: [
@@ -75,6 +144,11 @@ const contractConfig: IContractConfig = {
           name: "_message",
           type: "string",
         },
+        {
+          internalType: "bool",
+          name: "_isSubscriber",
+          type: "bool",
+        },
       ],
       name: "chat",
       outputs: [],
@@ -122,6 +196,47 @@ const contractConfig: IContractConfig = {
       type: "function",
     },
     {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "_streamId",
+          type: "uint256",
+        },
+      ],
+      name: "getAllChats",
+      outputs: [
+        {
+          components: [
+            {
+              internalType: "address",
+              name: "sender",
+              type: "address",
+            },
+            {
+              internalType: "string",
+              name: "message",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+            {
+              internalType: "bool",
+              name: "isSubscriber",
+              type: "bool",
+            },
+          ],
+          internalType: "struct xstream.Chat[]",
+          name: "",
+          type: "tuple[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
       inputs: [],
       name: "getLiveStreams",
       outputs: [
@@ -139,6 +254,16 @@ const contractConfig: IContractConfig = {
             },
             {
               internalType: "string",
+              name: "streamerName",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "roomId",
+              type: "string",
+            },
+            {
+              internalType: "string",
               name: "title",
               type: "string",
             },
@@ -151,6 +276,11 @@ const contractConfig: IContractConfig = {
               internalType: "string",
               name: "thumbnail",
               type: "string",
+            },
+            {
+              internalType: "bool",
+              name: "exclusive",
+              type: "bool",
             },
             {
               internalType: "bool",
@@ -201,6 +331,11 @@ const contractConfig: IContractConfig = {
           name: "amount",
           type: "uint256",
         },
+        {
+          internalType: "bool",
+          name: "isSubscriber",
+          type: "bool",
+        },
       ],
       stateMutability: "view",
       type: "function",
@@ -227,6 +362,16 @@ const contractConfig: IContractConfig = {
         },
         {
           internalType: "string",
+          name: "streamerName",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "roomId",
+          type: "string",
+        },
+        {
+          internalType: "string",
           name: "title",
           type: "string",
         },
@@ -239,6 +384,11 @@ const contractConfig: IContractConfig = {
           internalType: "string",
           name: "thumbnail",
           type: "string",
+        },
+        {
+          internalType: "bool",
+          name: "exclusive",
+          type: "bool",
         },
         {
           internalType: "bool",
@@ -314,6 +464,16 @@ const contractConfig: IContractConfig = {
         },
         {
           internalType: "string",
+          name: "streamerName",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "roomId",
+          type: "string",
+        },
+        {
+          internalType: "string",
           name: "title",
           type: "string",
         },
@@ -326,6 +486,11 @@ const contractConfig: IContractConfig = {
           internalType: "string",
           name: "thumbnail",
           type: "string",
+        },
+        {
+          internalType: "bool",
+          name: "exclusive",
+          type: "bool",
         },
         {
           internalType: "bool",
@@ -383,6 +548,16 @@ const contractConfig: IContractConfig = {
           internalType: "string",
           name: "_desp",
           type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_roomId",
+          type: "string",
+        },
+        {
+          internalType: "bool",
+          name: "_exclusive",
+          type: "bool",
         },
       ],
       name: "startStream",

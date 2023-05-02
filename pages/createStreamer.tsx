@@ -13,7 +13,8 @@ import { NFTStorage, File, Blob } from "nft.storage";
 import Context from "../context";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
-const canvg = require("canvg");
+import Modal from "react-modal";
+import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
 
 const CreateStreamer = () => {
   const [formData, setFormData] = useState<IFormData>({
@@ -26,11 +27,12 @@ const CreateStreamer = () => {
   const svgDataUrl = `data:image/svg+xml;base64,${btoa(nftSvgString)}`;
 
   const [nftString, setNftString] = useState<string>(svgDataUrl);
-  const [nftStringSVG, setNftStringSVG] = useState<string>(nftSvgString)
+  const [nftStringSVG, setNftStringSVG] = useState<string>(nftSvgString);
   const [uploadedFile, setUploadedFile] = useState({});
-  const client = new NFTStorage({ token: process.env.NEXT_PUBLIC_NFTSTORAGE_KEY });
-
-  
+  const [loading, setLoading] = useState<boolean>(false);
+  const client = new NFTStorage({
+    token: process.env.NEXT_PUBLIC_NFTSTORAGE_KEY,
+  });
 
   // const progressCallback = (progressData: number) => {
   //   let percentageDone =
@@ -60,12 +62,10 @@ const CreateStreamer = () => {
     // const file = new File([pngBlob], "nft.png", { type: "image/png" });
     // const cid = await storage.put([file]);
     // console.log(cid);
-
     // const client = IPFSHTTPClient("https://ipfs.infura.io:5001/api/v0")
     // console.log(nftString);
     // const result = await client.add(svgBuffer)
     // console.log(result);
-
     // Push file to lighthouse node
     // Both file and folder are supported by upload function
     // const output = await lighthouse.upload(nftString, process.env.NEXT_PUBLIC_LIGHTHOUSE_API_KEY);
@@ -79,30 +79,30 @@ const CreateStreamer = () => {
         }
       Note: Hash in response is CID.
     */
-
     // console.log(
     //   "Visit at https://gateway.lighthouse.storage/ipfs/" + output.data.Hash
     // );
-
-   
-
     // const url = `https://ipfs.io/ipfs/${cid}/Xstream${formData.name}NFT.png`
   };
 
   const createStreamer = async () => {
-     const blob = new Blob([nftStringSVG], {type: "image/svg+xml"});
+    setLoading(true);
+    const blob = new Blob([nftStringSVG], { type: "image/svg+xml" });
     const cid = await client.storeBlob(blob);
     const metadata = {
-      name: `Xtream NFT ${formData.name}`,
+      name: `Xstream NFT ${formData.name}`,
       description: `This NFT is of ${formData.name} with description as ${formData.desp}.`,
       image: `ipfs://${cid}`,
     };
     const metadataJSON = JSON.stringify(metadata);
     const metadataBlob = new Blob([metadataJSON], { type: "application/json" });
     const metadataCID = await client.storeBlob(metadataBlob);
-    console.log(metadataCID)
-    const metaData =  `ipfs://${metadataCID}`
-    const bigNftSupply = ethers.utils.parseUnits(formData.nftSupply.toString(),0);
+    console.log(metadataCID);
+    const metaData = `ipfs://${metadataCID}`;
+    const bigNftSupply = ethers.utils.parseUnits(
+      formData.nftSupply.toString(),
+      0
+    );
     console.log(formData.nftSupply, formData.name, formData.desp);
     const txn = await context.contract.createStreamer(
       formData.name,
@@ -112,6 +112,7 @@ const CreateStreamer = () => {
       bigNftSupply
     );
     await txn.wait();
+    setLoading(false);
     router.push("/home");
   };
 
@@ -130,6 +131,31 @@ const CreateStreamer = () => {
 
   return (
     <div className="flex flex-col justify-center items-center">
+      <Modal
+        className="loading flex flex-col"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(115, 4, 4, 0.05)",
+            backdropFilter: "blur(10px)",
+          },
+        }}
+        isOpen={loading}
+      >
+        <Image
+          alt="Xstream Logo"
+          src={XstreamLogo}
+          height={100}
+          className="absolute top-[40%] right-[32%]"
+        ></Image>
+        <div className="flex flex-row items-center absolute top-[55%] right-[32%]">
+          <span className="font-dieNasty text-white text-[3.5rem] mr-4">
+            Stream
+          </span>
+          <span className="font-dieNasty text-red-500 text-[3.5rem] ml-4">
+            Exclusively
+          </span>
+        </div>
+      </Modal>
       <Navbar></Navbar>
       <div className="h-[85vh] w-[80%] flex flex-row justify-around items-start pt-[5rem]">
         <div className="h-[28rem] w-[28rem] bg-red-400">
@@ -219,7 +245,12 @@ const CreateStreamer = () => {
             ></TextField>
           </div>
           <div className="flex flex-col justify-start items-start w-full mb-4">
-            <span className="text-white font-dieNasty text-[1.5rem] mb-2" onClick={()=>{console.log(nftStringSVG)}}>
+            <span
+              className="text-white font-dieNasty text-[1.5rem] mb-2"
+              onClick={() => {
+                console.log(nftStringSVG);
+              }}
+            >
               NFT Supply
             </span>
             <TextField

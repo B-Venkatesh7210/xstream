@@ -4,6 +4,9 @@ import Camera from "@mui/icons-material/CameraAlt";
 import CameraOff from "@mui/icons-material/NoPhotography";
 import Mic from "@mui/icons-material/Mic";
 import MicOff from "@mui/icons-material/MicOff";
+import ScreenShareIcon from '@mui/icons-material/ScreenShare';
+import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const ToggleButton: React.FC<IToggleButtonData> = ({
   h,
@@ -34,6 +37,26 @@ const ToggleButton: React.FC<IToggleButtonData> = ({
             )}
           </div>
         );
+      case "exit":
+        return (
+          <div>
+            {disabled ? (
+              <ExitToAppIcon style={{ fontSize: 30 }}></ExitToAppIcon>
+            ) : (
+              <ExitToAppIcon style={{ fontSize: 30 }}></ExitToAppIcon>
+            )}
+          </div>
+        );
+        case "stream":
+          return (
+            <div>
+              {disabled ? (
+                <StopScreenShareIcon style={{ fontSize: 30 }}></StopScreenShareIcon>
+              ) : (
+                <ScreenShareIcon style={{ fontSize: 30 }}></ScreenShareIcon>
+              )}
+            </div>
+          );
     }
   };
 

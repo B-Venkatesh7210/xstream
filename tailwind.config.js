@@ -14,6 +14,7 @@ module.exports = {
       colors: {
         darkRed: "#3C0303",
         lightRed: "#730404",
+        bgComponent: "rgba(115, 4, 4, 0.16)",
         darkGrey: "#343434",
         lightGrey: "#575353",
         textfield: "#070404"

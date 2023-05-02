@@ -9,25 +9,36 @@ import { useRouter } from "next/router";
 import { useAccount, useSigner } from "wagmi";
 import { IStreamerData } from "../utils/types";
 import { BigNumber } from "ethers";
+import Modal from "react-modal";
+import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
 
 const StreamerProfile = () => {
-  const svgDataUrl = `data:image/svg+xml;base64,${btoa(nftSvgString)}`;
   const context: any = useContext(Context);
   const router: any = useRouter();
-  const { data: signer } = useSigner();
   const { address } = useAccount();
   const [streamerData, setStreamerData] = useState<IStreamerData>();
   const [loading, setLoading] = useState<boolean>(false);
   const [isMe, setIsMe] = useState<boolean>();
+  const [isSubscriber, setIsSubscriber] = useState<boolean>();
+  const [nftSold, setNftSold] = useState<boolean>();
+  const [nftSupply, setNftSupply] = useState<number>();
+  const [streamerBalance, setStreamerBalance] = useState<number>();
 
   useEffect(() => {
-    context.setSigner(signer);
     const getStreamerData = async () => {
       setLoading(true);
       console.log(context.isStreamer);
       console.log(context.signer);
-      if (Object.keys(router.query).length === 1 && context.isStreamer) {
-        const data = await context.contract.addToStreamer(address);
+      if (Object.keys(router.query).length === 1) {
+        const data = await context.contract.addToStreamer(
+          router.query.streamer
+        );
+        const nftSupplyData = await context.nftContract.streamerIdToNftSupply(
+          data.streamerId
+        );
+        const nftSupplyNumber = nftSupplyData.toNumber();
+        console.log(nftSupplyNumber);
+        setNftSupply(nftSupplyNumber);
         console.log(data);
         const bigStreamerId = BigNumber.from(data.streamerId);
         const streamerId = bigStreamerId.toString();
@@ -45,23 +56,87 @@ const StreamerProfile = () => {
         });
         if (data.streamerAdd == address) {
           setIsMe(true);
+          const streamerBalanceData = await context.contract.streamerToBalance(
+            address
+          );
+          const streamerBalance = parseFloat(streamerBalanceData) / 10 ** 18;
+          console.log(streamerBalance);
+          setStreamerBalance(streamerBalance);
+        } else {
+          setIsMe(false);
+          const balanceData = await context.nftContract.balanceOf(
+            address,
+            data.streamerId
+          );
+          const nftSoldData: boolean = await context.nftContract.nftSold(
+            data.streamerId
+          );
+          setNftSold(nftSoldData);
+          console.log(balanceData);
+          console.log(nftSoldData);
+          const balance = balanceData.toNumber();
+          console.log(balance);
+          if (balance == 0) {
+            setIsSubscriber(false);
+          } else {
+            setIsSubscriber(true);
+          }
         }
       }
       setLoading(false);
     };
-    if (signer || context.signer) {
+    if (address || router.query.streamer) {
       getStreamerData();
     }
   }, [context.signer]);
 
+  const mintNFt = async () => {
+    setLoading(true)
+    const txn = await context.contract.mintNft(streamerData?.streamerAdd);
+    await txn.wait();
+    setLoading(false)
+    router.push("/home");
+  };
+
+  const extract = async () => {
+    setLoading(true)
+    const txn = await context.contract.extractBalance();
+    await txn.wait();
+    setLoading(false)
+    router.push("/home");
+  };
+
   return (
     <div className="flex flex-col justify-center items-center">
+      <Modal
+        className="loading flex flex-col"
+        style={{
+          overlay: {
+            backgroundColor: "rgba(115, 4, 4, 0.05)",
+            backdropFilter: "blur(10px)",
+          },
+        }}
+        isOpen={loading}
+      >
+        <Image
+          alt="Xstream Logo"
+          src={XstreamLogo}
+          height={100}
+          className="absolute top-[40%] right-[32%]"
+        ></Image>
+        <div className="flex flex-row items-center absolute top-[55%] right-[32%]">
+          <span className="font-dieNasty text-white text-[3.5rem] mr-4">
+            Stream
+          </span>
+          <span className="font-dieNasty text-red-500 text-[3.5rem] ml-4">
+            Exclusively
+          </span>
+        </div>
+      </Modal>
       <Navbar></Navbar>
-      {loading ? (
-        <div className="text-white">Loading</div>
-      ) : streamerData ? (
-        <div className="h-[85vh] w-[80%] flex flex-row justify-around items-start pt-[5rem]">
-          <div className="h-[28rem] w-[28rem] bg-red-400">
+      {streamerData ? (
+        <div className="h-[85vh] w-[90%] flex flex-row justify-evenly items-start pt-[5rem]">
+          <div className="h-[28rem] w-[28rem]">
             {/* <Image alt="NFT" src={`https://ipfs.io/ipfs/${streamerData.nftImage}`} width="448" height="448" /> */}
             <img
               alt="NFT"
@@ -69,7 +144,7 @@ const StreamerProfile = () => {
             ></img>
             {/* <Image alt="NFT" src={svgDataUrl} width="448" height="448" /> */}
           </div>
-          <div className="h-[70%] w-[40%] flex flex-col justify-start items-start px-6 py-2">
+          <div className="h-[70%] w-[40%] flex flex-col justify-start items-start pl-20 py-2">
             <div className="flex flex-col justify-start items-start w-full mb-4">
               <span className="text-white font-dieNasty text-[1.5rem] mb-2">
                 Name
@@ -106,21 +181,61 @@ const StreamerProfile = () => {
                 label={streamerData ? streamerData.totalNfts : "Loading"}
               ></DisplayField>
             </div>
-            {!isMe && (
+            {isMe ? (
+              <div className="flex flex-row w-full justify-center items-center">
+                <span className="font-spotify mr-20 mt-5 text-white text-[1.5rem]">
+                  {nftSupply} of {streamerData.totalNfts} NFTs have been minted
+                </span>
+              </div>
+            ) : isSubscriber ? (
+              <div className="flex flex-row w-full justify-center items-center">
+                <span className="font-spotify mr-12 mt-5 text-white text-[1.5rem]">
+                  You are already a Subscriber
+                </span>
+              </div>
+            ) : nftSold ? (
+              <div className="flex flex-row w-full justify-center items-center">
+                <span className="font-spotify mr-12 mt-5 text-white text-[1.5rem]">
+                  All {streamerData.totalNfts} NFTs were minted
+                </span>
+              </div>
+            ) : (
               <div className="w-full flex flex-row justify-center items-center">
                 <div className="mr-6 mt-6">
                   <PrimaryButton
                     h="h-[3.5rem]"
                     w="w-[14rem]"
                     textSize="text-[1.6rem]"
-                    label="Create"
-                    action={() => {}}
+                    label="Mint NFT"
+                    action={() => {
+                      mintNFt();
+                    }}
                     disabled={false}
                   />
                 </div>
               </div>
             )}
           </div>
+          {isMe && (
+            <div className="h-[28rem] w-[20rem] flex flex-col justify-center items-center">
+              <span className="font-dieNasty text-white text-[1.5rem]">
+                Stream Money
+              </span>
+              <span className="font-dieNasty text-red-500 text-[3rem] mb-4">
+                {streamerBalance}
+              </span>
+              <PrimaryButton
+                h="h-[3.5rem]"
+                w="w-[14rem]"
+                textSize="text-[1.6rem]"
+                label="Extract"
+                action={() => {
+                  extract();
+                }}
+                disabled={streamerBalance==0}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <div></div>

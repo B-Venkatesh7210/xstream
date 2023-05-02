@@ -1,7 +1,7 @@
 import { IContractConfig } from "./utils/types";
 
 const nftContractConfig: IContractConfig = {
-  address: "0x7614564Df80B04626Dd650d5Fbb256268656af20",
+  address: "0xa0195DD3e7Bd56E5f94DEC913aDeeb87E01eA53C",
   abi: [
     {
       inputs: [],
@@ -269,6 +269,19 @@ const nftContractConfig: IContractConfig = {
       type: "function",
     },
     {
+      inputs: [],
+      name: "name",
+      outputs: [
+        {
+          internalType: "string",
+          name: "",
+          type: "string",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
       inputs: [
         {
           internalType: "uint256",
@@ -404,6 +417,19 @@ const nftContractConfig: IContractConfig = {
           internalType: "bool",
           name: "",
           type: "bool",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [],
+      name: "symbol",
+      outputs: [
+        {
+          internalType: "string",
+          name: "",
+          type: "string",
         },
       ],
       stateMutability: "view",

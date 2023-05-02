@@ -37,7 +37,7 @@ export interface IContractConfig {
   abi: any[];
 }
 
-export interface IDisplayFieldData{
+export interface IDisplayFieldData {
   h: string;
   w: string;
   font: string;
@@ -45,7 +45,7 @@ export interface IDisplayFieldData{
   label: string;
 }
 
-export interface IStreamerData{
+export interface IStreamerData {
   streamerId: string;
   streamerAdd: string;
   name: string;
@@ -53,4 +53,59 @@ export interface IStreamerData{
   nftImage: string;
   totalNfts: string;
   isLive: boolean;
+}
+
+export interface IStreamData {
+  streamId: BigNumber;
+  streamer: string;
+  streamerName: string;
+  roomId: string;
+  title: string;
+  desp: string;
+  thumbnail: string;
+  exclusive: boolean;
+  isLive: boolean;
+  totalAmount: BigNumber;
+}
+
+export interface IChatMessage {
+  message: string;
+  amount: number;
+}
+
+export interface IChatData{
+  sender: string;
+  message: string;
+  amount: number;
+  isSubscriber: boolean;
+}
+
+export interface IStreamComponentProps {
+  liveStream: IStreamData;
+}
+
+export interface IHostViewProps {
+  streamData: IStreamData | undefined;
+  allChats: IChatData[] | undefined;
+  roomId: string;
+  cameraOn: boolean;
+  setCamera: any;
+  micOn: boolean;
+  setMic: any;
+  streamMoney: number;
+  videoRef: any;
+}
+
+export interface IPeerViewProps {
+  streamData: IStreamData | undefined;
+  allChats: IChatData[] | undefined;
+  chatData: IChatMessage;
+  setChatData: any;
+  chat: any;
+  roomId: string;
+  peers: any;
+  disabled: boolean;
+  setDisabled: any;
+  streamMoney: number;
+  isSubscriber: boolean | undefined;
 }
