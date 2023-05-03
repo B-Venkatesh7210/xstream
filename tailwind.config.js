@@ -21,7 +21,7 @@ module.exports = {
       },
       fontFamily: {
         dieNasty: ["Die Nasty", "sans-serif"],
-        spotify: ["Circular Spotify Tx T", "sans-serif"],
+        spotify: ["Spotify", "sans-serif"],
       },
     },
   },

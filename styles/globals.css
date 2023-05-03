@@ -12,6 +12,11 @@ body {
   src: url("../public/fonts/die-nasty.regular.otf");
 }
 
+@font-face {
+  font-family: "Spotify";
+  src: url("../public/fonts/CircularSpotifyText-Black.otf");
+}
+
 html {
   background: #111111;
 }

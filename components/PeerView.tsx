@@ -12,7 +12,6 @@ import { useRoom, useLobby } from "@huddle01/react/hooks";
 import Image from "next/image";
 import FilecoinLogo from "../public/assets/logos/Filecoin Logo.png";
 
-
 const PeerView: React.FC<IPeerViewProps> = ({
   streamData,
   allChats,
@@ -102,7 +101,7 @@ const PeerView: React.FC<IPeerViewProps> = ({
             action={() => {
               // stopStream();
               leaveRoom();
-              router.push("/home")
+              router.push("/home");
             }}
             type="exit"
           ></ToggleButton>
@@ -116,6 +115,9 @@ const PeerView: React.FC<IPeerViewProps> = ({
           <span className="font-dieNasty text-red-500 text-[2rem] ml-4">
             {streamMoney}
           </span>
+          <div className="h-[2rem] w-[2rem] mx-4">
+            <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+          </div>
         </div>
         <div className="h-[65%] w-full overflow-scroll scrollbar-hidden flex flex-col justify-start items-center border-lightRed border-b-2 rounded-2xl py-4">
           {allChats?.map((allChat, index) =>
@@ -142,9 +144,17 @@ const PeerView: React.FC<IPeerViewProps> = ({
                     <span className="font-dieNasty text-white text-[0.8rem]">
                       Amount
                     </span>
-                    <span className="font-spotify text-red-500 text-[2rem]">
-                      {parseFloat(allChat.amount.toString()) / 10 ** 18}
-                    </span>
+                    <div className="flex flex-col justify-center items-center">
+                      <span className="font-spotify text-red-500 text-[1.5rem]">
+                        {parseFloat(allChat.amount.toString()) / 10 ** 18}
+                      </span>
+                      <div className="h-[1.5rem] w-[1.5rem] mb-1">
+                        <Image
+                          alt="Xstream Text Logo"
+                          src={FilecoinLogo}
+                        ></Image>
+                      </div>
+                    </div>
                   </span>
                 </div>
               </div>
@@ -163,9 +173,14 @@ const PeerView: React.FC<IPeerViewProps> = ({
                   <span className="font-dieNasty text-white text-[0.8rem]">
                     Amount
                   </span>
-                  <span className="font-spotify text-red-500 text-[1.2rem]">
-                    {parseFloat(allChat.amount.toString()) / 10 ** 18}
-                  </span>
+                  <div className="w-full flex flex-row justify-evenly items-center mt-1">
+                    <span className="font-spotify text-red-500 text-[1.2rem]">
+                      {parseFloat(allChat.amount.toString()) / 10 ** 18}
+                    </span>
+                    <div className="h-[1rem] w-[1rem] mb-1">
+                      <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+                    </div>
+                  </div>
                 </span>
               </div>
             )
@@ -207,8 +222,8 @@ const PeerView: React.FC<IPeerViewProps> = ({
                 className="appearance-none outline-none font-spotify ml-2 text-[1.2rem] text-black rounded-lg w-[50%] h-full bg-[#CACACA] p-2"
               ></input>
               <div className="h-[3rem] w-[3rem] mt-4 mx-2">
-                  <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
-                </div>
+                <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+              </div>
             </div>
             <div
               className={`h-full w-[6rem] rounded-lg ${

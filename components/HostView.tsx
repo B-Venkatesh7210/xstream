@@ -9,6 +9,7 @@ import CameraOff from "@mui/icons-material/NoPhotography";
 import Modal from "react-modal";
 import Image from "next/image";
 import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
+import FilecoinLogo from "../public/assets/logos/Filecoin Logo.png";
 
 const HostView: React.FC<IHostViewProps> = ({
   streamData,
@@ -182,6 +183,9 @@ const HostView: React.FC<IHostViewProps> = ({
           <span className="font-dieNasty text-red-500 text-[2rem] ml-4">
             {streamMoney}
           </span>
+          <div className="h-[2rem] w-[2rem] mx-4">
+            <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+          </div>
         </div>
         <div className="h-[85%] w-full overflow-scroll scrollbar-hidden flex flex-col justify-start items-center border-lightRed border-b-2 rounded-2xl py-4">
           {allChats?.map((allChat, index) =>
@@ -208,9 +212,17 @@ const HostView: React.FC<IHostViewProps> = ({
                     <span className="font-dieNasty text-white text-[0.8rem]">
                       Amount
                     </span>
-                    <span className="font-spotify text-red-500 text-[2rem]">
-                      {parseFloat(allChat.amount.toString()) / 10 ** 18}
-                    </span>
+                    <div className="flex flex-col justify-center items-center">
+                      <span className="font-spotify text-red-500 text-[1.5rem]">
+                        {parseFloat(allChat.amount.toString()) / 10 ** 18}
+                      </span>
+                      <div className="h-[1.5rem] w-[1.5rem] mb-1">
+                        <Image
+                          alt="Xstream Text Logo"
+                          src={FilecoinLogo}
+                        ></Image>
+                      </div>
+                    </div>
                   </span>
                 </div>
               </div>
@@ -229,9 +241,14 @@ const HostView: React.FC<IHostViewProps> = ({
                   <span className="font-dieNasty text-white text-[0.8rem]">
                     Amount
                   </span>
-                  <span className="font-spotify text-red-500 text-[1.2rem]">
-                    {parseFloat(allChat.amount.toString()) / 10 ** 18}
-                  </span>
+                  <div className="w-full flex flex-row justify-evenly items-center mt-1">
+                    <span className="font-spotify text-red-500 text-[1.2rem]">
+                      {parseFloat(allChat.amount.toString()) / 10 ** 18}
+                    </span>
+                    <div className="h-[1rem] w-[1rem] mb-1">
+                      <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+                    </div>
+                  </div>
                 </span>
               </div>
             )

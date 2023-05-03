@@ -89,7 +89,7 @@ const Home: NextPage = () => {
                   Exclusively
                 </span>
               </div>
-              <span className="font-spotify text-white text-[1rem] mr-4 mt-4">
+              <span className="font-spotify text-white text-[1rem] mr-4">
                 Become a{" "}
                 <span className="font-dieNasty text-red-500 text-[1.3rem]">
                   Streamer{" "}
