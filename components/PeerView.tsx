@@ -9,6 +9,9 @@ import PrimaryButton from "./PrimaryButton";
 import ToggleButton from "./ToggleButton";
 import Router from "next/router";
 import { useRoom, useLobby } from "@huddle01/react/hooks";
+import Image from "next/image";
+import FilecoinLogo from "../public/assets/logos/Filecoin Logo.png";
+
 
 const PeerView: React.FC<IPeerViewProps> = ({
   streamData,
@@ -60,7 +63,7 @@ const PeerView: React.FC<IPeerViewProps> = ({
                   className="h-[28rem] mt-4 aspect-video bg-zinc-800/50 rounded-2xl relative overflow-hidden"
                 >
                   <Video
-                    // peerId={peer.peerId}
+                    peerId={""}
                     track={peer.cam}
                     className="h-full w-full object-contain absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                     debug
@@ -203,6 +206,9 @@ const PeerView: React.FC<IPeerViewProps> = ({
                 }}
                 className="appearance-none outline-none font-spotify ml-2 text-[1.2rem] text-black rounded-lg w-[50%] h-full bg-[#CACACA] p-2"
               ></input>
+              <div className="h-[3rem] w-[3rem] mt-4 mx-2">
+                  <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+                </div>
             </div>
             <div
               className={`h-full w-[6rem] rounded-lg ${

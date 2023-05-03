@@ -112,7 +112,7 @@ const HostView: React.FC<IHostViewProps> = ({
           <div className="h-[28rem] mt-4 aspect-video bg-zinc-800/50 rounded-2xl relative overflow-hidden">
             {cameraOn == false && (
               <div className="h-full w-full bg-zinc-800 absolute flex flex-row justify-center items-center z-40">
-                <CameraOff style={{ fontSize: 30 }}></CameraOff>
+                <CameraOff style={{ fontSize: 100 }}></CameraOff>
               </div>
             )}
             {

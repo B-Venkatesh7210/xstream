@@ -11,6 +11,7 @@ import { IStreamerData } from "../utils/types";
 import { BigNumber } from "ethers";
 import Modal from "react-modal";
 import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
+import FilecoinLogo from "../public/assets/logos/Filecoin Logo.png";
 
 const StreamerProfile = () => {
   const context: any = useContext(Context);
@@ -91,18 +92,18 @@ const StreamerProfile = () => {
   }, [context.signer]);
 
   const mintNFt = async () => {
-    setLoading(true)
+    setLoading(true);
     const txn = await context.contract.mintNft(streamerData?.streamerAdd);
     await txn.wait();
-    setLoading(false)
+    setLoading(false);
     router.push("/home");
   };
 
   const extract = async () => {
-    setLoading(true)
+    setLoading(true);
     const txn = await context.contract.extractBalance();
     await txn.wait();
-    setLoading(false)
+    setLoading(false);
     router.push("/home");
   };
 
@@ -221,9 +222,14 @@ const StreamerProfile = () => {
               <span className="font-dieNasty text-white text-[1.5rem]">
                 Stream Money
               </span>
-              <span className="font-dieNasty text-red-500 text-[3rem] mb-4">
-                {streamerBalance}
-              </span>
+              <div className="flex flex-row items-center mx-2">
+                <span className="font-dieNasty text-red-500 text-[3rem] mb-4">
+                  {streamerBalance}
+                </span>
+                <div className="h-[3rem] w-[3rem] mb-4 mx-2">
+                  <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+                </div>
+              </div>
               <PrimaryButton
                 h="h-[3.5rem]"
                 w="w-[14rem]"
@@ -232,7 +238,7 @@ const StreamerProfile = () => {
                 action={() => {
                   extract();
                 }}
-                disabled={streamerBalance==0}
+                disabled={streamerBalance == 0}
               />
             </div>
           )}

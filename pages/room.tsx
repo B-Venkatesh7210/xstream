@@ -154,36 +154,48 @@ const Room = () => {
     setLoading(false);
   };
 
-  context.contract.on("ChatReceived", (sender: string, message: string) => {
-    console.log(sender, message);
-    const getAllChatData = async () => {
-      const data = await context.contract.getAllChats(router.query.streamId);
-      const streamData: IStreamData = await context.contract.idToStream(
-        router.query.streamId
-      );
-      const streamMoneyBig =
-        parseFloat(streamData.totalAmount.toString()) / 10 ** 18;
-      setStreamMoney(streamMoneyBig);
-      setAllChats(data);
-    };
-    getAllChatData();
-  });
-
-  context.contract.on(
-    "StreamStopped",
-    (streamId: BigNumber, streamer: string) => {
-      const streamIdData = BigNumber.from(streamId);
-      const streamIdNum: string = streamIdData.toString();
-      console.log("I was called");
-      const streamIdNum2: string = router.query.streamId.toString();
-      console.log(streamIdNum2, streamIdNum);
-      if (streamIdNum2 === streamIdNum) {
-        console.log("I was called again");
-        // alert(`The Stream has been stopped.`);
-        router.push("/home");
+  useEffect(() => {
+    const eventEmitter1 = context.contract.on(
+      "ChatReceived",
+      (sender: string, message: string) => {
+        console.log(sender, message);
+        const getAllChatData = async () => {
+          const data = await context.contract.getAllChats(
+            router.query.streamId
+          );
+          const streamData: IStreamData = await context.contract.idToStream(
+            router.query.streamId
+          );
+          const streamMoneyBig =
+            parseFloat(streamData.totalAmount.toString()) / 10 ** 18;
+          setStreamMoney(streamMoneyBig);
+          setAllChats(data);
+        };
+        getAllChatData();
       }
-    }
-  );
+    );
+
+    const eventEmitter2 = context.contract.on(
+      "StreamStopped",
+      (streamId: BigNumber, streamer: string) => {
+        const streamIdData = BigNumber.from(streamId);
+        const streamIdNum: string = streamIdData.toString();
+        console.log("I was called");
+        const streamIdNum2: string = router.query.streamId.toString();
+        console.log(streamIdNum2, streamIdNum);
+        if (streamIdNum2 === streamIdNum) {
+          console.log("I was called again");
+          alert(`The Stream has been stopped.`);
+          router.push("/home");
+        }
+      }
+    );
+
+    return () => {
+      eventEmitter1.removeAllListeners("ChatReceived");
+      eventEmitter2.removeAllListeners("StreamStopped");
+    };
+  }, []);
 
   return (
     <>

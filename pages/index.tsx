@@ -8,6 +8,10 @@ import { useRoom, useRecording } from "@huddle01/react/hooks";
 import { Video, Audio } from "@huddle01/react/components";
 import { useEventListener } from "@huddle01/react";
 import { useRouter } from "next/router";
+import Image from "next/image";
+import XstreamTextLogo from "../public/assets/logos/XSTREAM text Logo.png";
+import XstreamLogo from "../public/assets/logos/Xstream Logo.png";
+import PrimaryButton from "../components/PrimaryButton";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -56,7 +60,96 @@ const Home: NextPage = () => {
   return (
     <>
       <ClientOnly>
-        
+        <div className="min-h-screen w-screen flex flex-col justify-start items-center">
+          <div className="w-full flex flex-row justify-start items-center px-4 pt-4">
+            <span className="font-dieNasty text-white text-[1.5rem]">
+              Powered By
+            </span>
+            <Image
+              src="https://huddle01-assets-frontend.s3.amazonaws.com/Logo/community.png"
+              alt="Vercel Logo"
+              width={250}
+              height={100}
+              priority
+              className="ml-6"
+            />
+          </div>
+          <div className="h-[80vh] w-full flex flex-row justify-around items-center px-10 mt-10">
+            <div className="flex flex-col justify-start items-center">
+              <Image
+                alt="Xstream Text Logo"
+                src={XstreamTextLogo}
+                height={100}
+              ></Image>
+              <div className="flex flex-row items-center">
+                <span className="font-dieNasty text-white text-[3.5rem] mr-4">
+                  Stream
+                </span>
+                <span className="font-dieNasty text-red-500 text-[3.5rem] ml-4">
+                  Exclusively
+                </span>
+              </div>
+              <span className="font-spotify text-white text-[1rem] mr-4 mt-4">
+                Become a{" "}
+                <span className="font-dieNasty text-red-500 text-[1.3rem]">
+                  Streamer{" "}
+                </span>
+                | Mint{" "}
+                <span className="font-dieNasty text-red-500 text-[1.3rem]">
+                  NFTs{" "}
+                </span>
+                | Send{" "}
+                <span className="font-dieNasty text-red-500 text-[1.3rem]">
+                  SuperChats{" "}
+                </span>
+                | Watch{" "}
+                <span className="font-dieNasty text-red-500 text-[1.3rem]">
+                  Exclusive Content{" "}
+                </span>
+              </span>
+              <div className="flex flex-row justify-center items-baseline mt-6">
+                <span className="font-spotify text-white text-[2rem] mx-2">
+                  Token
+                </span>
+                <span className="font-dieNasty text-red-500 text-[2.5rem] mx-2">
+                  {" "}
+                  Gated
+                </span>{" "}
+                <span className="font-spotify text-white text-[2rem] mx-2">Video</span>{" "}
+                <span className="font-dieNasty text-red-500 text-[2.5rem] mx-2">
+                  Streaming
+                </span>
+              </div>
+
+              <div className="w-[80%] flex flex-row justify-around items-center mt-14">
+                <div className="flex flex-col justify-center items-center">
+                  <a
+                    target="_blank"
+                    href="https://hyperspace.yoga/"
+                    rel="noreferrer"
+                    className="font-dieNasty text-white text-[2rem] underline"
+                  >
+                    TFIL Faucet
+                  </a>
+                  <span className="font-spotify text-red-500 text-[0.8rem]">
+                    (Get TFIL tokens to get revealed)
+                  </span>
+                </div>
+                <PrimaryButton
+                  h="h-[3.5rem]"
+                  w="w-[14rem]"
+                  textSize="text-[1.6rem]"
+                  label="Enter Dapp"
+                  action={() => {
+                    router.push("/home");
+                  }}
+                  disabled={false}
+                />
+              </div>
+            </div>
+            <Image alt="Xstream Logo" src={XstreamLogo} height={500}></Image>
+          </div>
+        </div>
         {/* <button
           onClick={() => {
             router.push("/home");
