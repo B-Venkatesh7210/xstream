@@ -1,7 +1,7 @@
 import { IContractConfig } from "./utils/types";
 
 const contractConfig: IContractConfig = {
-  address: "0x90e73FAa2202A16dA36E4938795786Fc28bD92b6",
+  address: "0x1CCEE1C52b9fd9D1A23776bDB136041407031CaE",
   abi: [
     {
       inputs: [
@@ -78,6 +78,12 @@ const contractConfig: IContractConfig = {
           internalType: "address",
           name: "streamer",
           type: "address",
+        },
+        {
+          indexed: false,
+          internalType: "string",
+          name: "streamerName",
+          type: "string",
         },
       ],
       name: "StreamStopped",

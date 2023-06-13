@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { IHostViewProps } from "../utils/types";
 import ToggleButton from "./ToggleButton";
-import { useVideo, useAudio } from "@huddle01/react/hooks";
+import { useVideo, useAudio, useRecording } from "@huddle01/react/hooks";
 import { getEllipsisTxt } from "../utils/formatters";
 import Context from "../context";
 import { useRouter } from "next/router";
@@ -40,6 +40,13 @@ const HostView: React.FC<IHostViewProps> = ({
     isProducing: mic,
     error: micError,
   } = useAudio();
+  const {
+    startRecording,
+    stopRecording,
+    error,
+    data: recordingData,
+    inProgress,
+  } = useRecording();
 
   const context: any = useContext(Context);
   const router: any = useRouter();
@@ -173,6 +180,22 @@ const HostView: React.FC<IHostViewProps> = ({
             }}
             type="exit"
           ></ToggleButton>
+          <div
+            className="text-white"
+            onClick={() => {
+              console.log(`https://${window.location.host}/room?roomId=${roomId}&streamId=${streamData?.streamId}`);
+              startRecording(`https://${window.location.host}/room?roomId=${roomId}&streamId=${streamData?.streamId}`);
+            }}
+          >
+            Start Recording
+          </div>
+          <div
+            className="text-white"
+            onClick={stopRecording}
+          >
+            Stop Recording
+          </div>
+          <div className="text-white">inProgress: {inProgress.toString()}</div>
         </div>
       </div>
       <div className="w-[35%] h-[80%] primaryButton rounded-[1.5rem] chatBg flex flex-col justify-evenly items-center px-4 pb-4">

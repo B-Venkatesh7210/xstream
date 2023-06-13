@@ -14,7 +14,8 @@ import contractConfig from "../contractConfig";
 import nftContractConfig from "../nftContractConfig";
 
 const { chains, provider } = configureChains(
-  [filecoinHyperspace],
+  // [filecoinHyperspace],
+  [polygonMumbai],
   [publicProvider()]
 );
 

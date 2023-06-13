@@ -27,6 +27,9 @@ import PeerView from "../components/PeerView";
 import Modal from "react-modal";
 import Image from "next/image";
 import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
+import * as PushAPI from "@pushprotocol/restapi";
+import * as ethers from "ethers";
+import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 
 const Room = () => {
   const router: any = useRouter();
@@ -72,6 +75,7 @@ const Room = () => {
   const [chatDone, setChatDone] = useState<boolean>(false);
   const [streamMoney, setStreamMoney] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+
 
   useEffect(() => {
     console.log("camera setting");
@@ -154,6 +158,37 @@ const Room = () => {
     setLoading(false);
   };
 
+  const PK = process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY;
+  const Pkey = `0x${PK}`;
+  const _signer = new ethers.Wallet(Pkey);
+
+  const sendNotification = async (streamerName: string) => {
+    try {
+      const apiResponse = await PushAPI.payloads.sendNotification({
+        signer: _signer,
+        type: 3, // target
+        identityType: 2, // direct payload
+        notification: {
+          title: `Xstream Stream Stopped`,
+          body: `${streamerName} has stopped the stream`,
+        },
+        payload: {
+          title: `Xstream Stream Stopped`,
+          body: `${streamerName} has stopped the stream`,
+          cta: "",
+          img: "",
+        },
+        recipients: `eip155:5:${address}`, // recipient address
+        channel: "eip155:5:0xf4e742253cEF3F03b63876570691303C47bB7c1d", // your channel address
+        env : ENV.STAGING
+      }); 
+      console.log(apiResponse);
+      console.log(streamData?.streamer)
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
   useEffect(() => {
     const eventEmitter1 = context.contract.on(
       "ChatReceived",
@@ -177,7 +212,7 @@ const Room = () => {
 
     const eventEmitter2 = context.contract.on(
       "StreamStopped",
-      (streamId: BigNumber, streamer: string) => {
+      (streamId: BigNumber, streamer: string, streamerName: string) => {
         const streamIdData = BigNumber.from(streamId);
         const streamIdNum: string = streamIdData.toString();
         console.log("I was called");
@@ -186,6 +221,8 @@ const Room = () => {
         if (streamIdNum2 === streamIdNum) {
           console.log("I was called again");
           alert(`The Stream has been stopped.`);
+          // const streamerName: string | undefined = streamData?.streamerName;
+          sendNotification(streamerName)
           router.push("/home");
         }
       }

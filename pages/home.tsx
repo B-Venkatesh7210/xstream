@@ -18,6 +18,8 @@ import StreamComponent from "../components/StreamComponent";
 import Modal from "react-modal";
 import Image from "next/image";
 import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
+import { createHelia } from 'helia'
+// import { strings } from '@helia/strings'
 
 const Home = () => {
   const context: any = useContext(Context);
