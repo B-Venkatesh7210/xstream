@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import contractConfig from "../contractConfig";
 import nftContractConfig from "../nftContractConfig";
+import { IUser } from "../utils/types";
 
 const { chains, provider } = configureChains(
   // [filecoinHyperspace],
@@ -41,6 +42,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [contract, setContract] = useState();
   const [nftContract, setNftContract] = useState();
   const [isStreamer, setIsStreamer] = useState<boolean>(false);
+  const [user, setUser] = useState<IUser>()
   const {isDisconnected} = useAccount()
 
   useEffect(() => {
@@ -88,7 +90,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           isStreamer,
           setIsStreamer,
           nftContract,
-          setNftContract
+          setNftContract,
+          user,
+          setUser
         }}>
         <Component {...pageProps} />
         </Context.Provider>

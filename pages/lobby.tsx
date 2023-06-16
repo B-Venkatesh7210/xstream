@@ -17,9 +17,9 @@ import { NFTStorage, File, Blob } from "nft.storage";
 import TextField from "../components/TextField";
 import { IFormData } from "../utils/types";
 import CameraOff from "@mui/icons-material/NoPhotography";
-import Modal from "react-modal";
 import Image from "next/image";
 import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
+import LoadingModal from "../components/LoadingModal";
 
 const Lobby = () => {
   const context: any = useContext(Context);
@@ -94,31 +94,7 @@ const Lobby = () => {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <Modal
-        className="loading flex flex-col"
-        style={{
-          overlay: {
-            backgroundColor: "rgba(115, 4, 4, 0.05)",
-            backdropFilter: "blur(10px)",
-          },
-        }}
-        isOpen={loading}
-      >
-        <Image
-          alt="Xstream Logo"
-          src={XstreamLogo}
-          height={100}
-          className="absolute top-[40%] right-[32%]"
-        ></Image>
-        <div className="flex flex-row items-center absolute top-[55%] right-[32%]">
-          <span className="font-dieNasty text-white text-[3.5rem] mr-4">
-            Stream
-          </span>
-          <span className="font-dieNasty text-red-500 text-[3.5rem] ml-4">
-            Exclusively
-          </span>
-        </div>
-      </Modal>
+      <LoadingModal isOpen={loading}></LoadingModal>
       <Navbar></Navbar>
       <div className="h-[85vh] w-[90%] flex flex-row justify-between items-center">
         <div className="h-full flex flex-col justify-center items-center">

@@ -6,10 +6,9 @@ import { getEllipsisTxt } from "../utils/formatters";
 import Context from "../context";
 import { useRouter } from "next/router";
 import CameraOff from "@mui/icons-material/NoPhotography";
-import Modal from "react-modal";
 import Image from "next/image";
-import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
 import FilecoinLogo from "../public/assets/logos/Filecoin Logo.png";
+import LoadingModal from "./LoadingModal";
 
 const HostView: React.FC<IHostViewProps> = ({
   streamData,
@@ -71,31 +70,7 @@ const HostView: React.FC<IHostViewProps> = ({
   };
   return (
     <div className="h-screen w-screen flex flex-row justify-between items-center px-12">
-      <Modal
-        className="loading flex flex-col"
-        style={{
-          overlay: {
-            backgroundColor: "rgba(115, 4, 4, 0.05)",
-            backdropFilter: "blur(10px)",
-          },
-        }}
-        isOpen={loading}
-      >
-        <Image
-          alt="Xstream Logo"
-          src={XstreamLogo}
-          height={100}
-          className="absolute top-[40%] right-[32%]"
-        ></Image>
-        <div className="flex flex-row items-center absolute top-[55%] right-[32%]">
-          <span className="font-dieNasty text-white text-[3.5rem] mr-4">
-            Stream
-          </span>
-          <span className="font-dieNasty text-red-500 text-[3.5rem] ml-4">
-            Exclusively
-          </span>
-        </div>
-      </Modal>
+      <LoadingModal isOpen={loading}></LoadingModal>
       <div className="h-full w-[60%] flex flex-col justify-center items-center">
         <div className="w-[80%] flex flex-row justify-between items-baseline">
           <span className="font-spotify text-red-500 text-[1rem]">
@@ -183,16 +158,17 @@ const HostView: React.FC<IHostViewProps> = ({
           <div
             className="text-white"
             onClick={() => {
-              console.log(`https://${window.location.host}/room?roomId=${roomId}&streamId=${streamData?.streamId}`);
-              startRecording(`https://${window.location.host}/room?roomId=${roomId}&streamId=${streamData?.streamId}`);
+              console.log(
+                `https://${window.location.host}/room?roomId=${roomId}&streamId=${streamData?.streamId}`
+              );
+              startRecording(
+                `https://${window.location.host}/room?roomId=${roomId}&streamId=${streamData?.streamId}`
+              );
             }}
           >
             Start Recording
           </div>
-          <div
-            className="text-white"
-            onClick={stopRecording}
-          >
+          <div className="text-white" onClick={stopRecording}>
             Stop Recording
           </div>
           <div className="text-white">inProgress: {inProgress.toString()}</div>

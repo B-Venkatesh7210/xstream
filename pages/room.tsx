@@ -24,12 +24,12 @@ import PrimaryButton from "../components/PrimaryButton";
 import Router from "next/router";
 import HostView from "../components/HostView";
 import PeerView from "../components/PeerView";
-import Modal from "react-modal";
 import Image from "next/image";
 import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
 import * as PushAPI from "@pushprotocol/restapi";
 import * as ethers from "ethers";
 import { ENV } from "@pushprotocol/restapi/src/lib/constants";
+import LoadingModal from "../components/LoadingModal";
 
 const Room = () => {
   const router: any = useRouter();
@@ -75,7 +75,6 @@ const Room = () => {
   const [chatDone, setChatDone] = useState<boolean>(false);
   const [streamMoney, setStreamMoney] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-
 
   useEffect(() => {
     console.log("camera setting");
@@ -180,10 +179,10 @@ const Room = () => {
         },
         recipients: `eip155:5:${address}`, // recipient address
         channel: "eip155:5:0xf4e742253cEF3F03b63876570691303C47bB7c1d", // your channel address
-        env : ENV.STAGING
-      }); 
+        env: ENV.STAGING,
+      });
       console.log(apiResponse);
-      console.log(streamData?.streamer)
+      console.log(streamData?.streamer);
     } catch (error) {
       console.error("Error: ", error);
     }
@@ -222,7 +221,7 @@ const Room = () => {
           console.log("I was called again");
           alert(`The Stream has been stopped.`);
           // const streamerName: string | undefined = streamData?.streamerName;
-          sendNotification(streamerName)
+          sendNotification(streamerName);
           router.push("/home");
         }
       }
@@ -236,31 +235,7 @@ const Room = () => {
 
   return (
     <>
-      <Modal
-        className="loading flex flex-col"
-        style={{
-          overlay: {
-            backgroundColor: "rgba(115, 4, 4, 0.05)",
-            backdropFilter: "blur(10px)",
-          },
-        }}
-        isOpen={loading}
-      >
-        <Image
-          alt="Xstream Logo"
-          src={XstreamLogo}
-          height={100}
-          className="absolute top-[40%] right-[32%]"
-        ></Image>
-        <div className="flex flex-row items-center absolute top-[55%] right-[32%]">
-          <span className="font-dieNasty text-white text-[3.5rem] mr-4">
-            Stream
-          </span>
-          <span className="font-dieNasty text-red-500 text-[3.5rem] ml-4">
-            Exclusively
-          </span>
-        </div>
-      </Modal>
+      <LoadingModal isOpen={loading}></LoadingModal>
       {isHost ? (
         <HostView
           streamData={streamData}

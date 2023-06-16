@@ -2,16 +2,15 @@ import React, { useEffect, useState, useContext } from "react";
 import PrimaryButton from "../components/PrimaryButton";
 import Navbar from "../components/Navbar";
 import Image from "next/image";
-import nftSvgString from "../nftSvgString";
 import DisplayField from "../components/DisplayField";
 import Context from "../context";
 import { useRouter } from "next/router";
 import { useAccount, useSigner } from "wagmi";
 import { IStreamerData } from "../utils/types";
 import { BigNumber } from "ethers";
-import Modal from "react-modal";
-import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
 import FilecoinLogo from "../public/assets/logos/Filecoin Logo.png";
+import LoadingModal from "../components/LoadingModal";
+import ChatModal from "../components/ChatModal";
 
 const StreamerProfile = () => {
   const context: any = useContext(Context);
@@ -19,6 +18,7 @@ const StreamerProfile = () => {
   const { address } = useAccount();
   const [streamerData, setStreamerData] = useState<IStreamerData>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [openChat, setOpenChat] = useState<boolean>(false);
   const [isMe, setIsMe] = useState<boolean>();
   const [isSubscriber, setIsSubscriber] = useState<boolean>();
   const [nftSold, setNftSold] = useState<boolean>();
@@ -109,31 +109,16 @@ const StreamerProfile = () => {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <Modal
-        className="loading flex flex-col"
-        style={{
-          overlay: {
-            backgroundColor: "rgba(115, 4, 4, 0.05)",
-            backdropFilter: "blur(10px)",
-          },
-        }}
-        isOpen={loading}
-      >
-        <Image
-          alt="Xstream Logo"
-          src={XstreamLogo}
-          height={100}
-          className="absolute top-[40%] right-[32%]"
-        ></Image>
-        <div className="flex flex-row items-center absolute top-[55%] right-[32%]">
-          <span className="font-dieNasty text-white text-[3.5rem] mr-4">
-            Stream
-          </span>
-          <span className="font-dieNasty text-red-500 text-[3.5rem] ml-4">
-            Exclusively
-          </span>
-        </div>
-      </Modal>
+      <LoadingModal isOpen={loading}></LoadingModal>
+      {openChat && (
+        <ChatModal
+          isOpen={openChat}
+          setOpenChat={setOpenChat}
+          sender={address}
+          receiver={streamerData?.streamerAdd}
+          receiverName={streamerData?.name}
+        ></ChatModal>
+      )}
       <Navbar></Navbar>
       {streamerData ? (
         <div className="h-[85vh] w-[90%] flex flex-row justify-evenly items-start pt-[5rem]">
@@ -189,10 +174,19 @@ const StreamerProfile = () => {
                 </span>
               </div>
             ) : isSubscriber ? (
-              <div className="flex flex-row w-full justify-center items-center">
-                <span className="font-spotify mr-12 mt-5 text-white text-[1.5rem]">
-                  You are already a Subscriber
-                </span>
+              <div className="w-full flex flex-row justify-center items-center">
+                <div className="mr-6 mt-6">
+                  <PrimaryButton
+                    h="h-[3.5rem]"
+                    w="w-[14rem]"
+                    textSize="text-[1.6rem]"
+                    label="Chat Now"
+                    action={() => {
+                      setOpenChat(true);
+                    }}
+                    disabled={false}
+                  />
+                </div>
               </div>
             ) : nftSold ? (
               <div className="flex flex-row w-full justify-center items-center">
