@@ -5,7 +5,7 @@ import { useHuddle01 } from "@huddle01/react";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig, useAccount, goerli, useProvider } from "wagmi";
-import { filecoinHyperspace, polygonMumbai } from "wagmi/chains";
+import { filecoinHyperspace, polygonMumbai, mainnet } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import Context from "../context";
 import { useRouter } from "next/router";

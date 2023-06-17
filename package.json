@@ -26,6 +26,7 @@
     "ipfs-http-client": "^60.0.0",
     "next": "13.0.0",
     "nft.storage": "^7.0.3",
+    "ngrok": "^5.0.0-beta.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-modal": "^3.16.1",

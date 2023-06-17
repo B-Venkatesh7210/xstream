@@ -26,12 +26,14 @@ import { IFeeds } from "@pushprotocol/restapi";
 import { getEllipsisTxt } from "../utils/formatters";
 import DoneIcon from "@mui/icons-material/Done";
 import ChatModal from "../components/ChatModal";
+import { useProvider, useEnsAvatar, useEnsName } from "wagmi";
 
 const Home = () => {
   const context: any = useContext(Context);
   const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
   const { joinRoom, leaveRoom, isRoomJoined } = useRoom();
   const router: any = useRouter();
+  const currProvider = useProvider();
   const { isConnected, address } = useAccount();
   const { data: signer, isError } = useSigner();
   const [isStreamer, setIsStreamer] = useState<boolean>(false);
@@ -39,8 +41,19 @@ const Home = () => {
   const [streamerData, setStreamerData] = useState<IStreamerData>();
   const [liveStreams, setLiveStreams] = useState<[]>();
   const [chatRequestsArr, setChatRequestsArr] = useState<IFeeds[]>();
-  const [pgpDecrpyptedPvtKey, setPgpDecrpyptedPvtKey] = useState();
+  const [chatsArr, setChatsArr] = useState<IFeeds[]>();
+  const [pgpDecrpytedPvtKey, setPgpDecrpytedPvtKey] = useState();
   const [openChat, setOpenChat] = useState<boolean>(false);
+  const [selectedSender, setSelectedSender] = useState("");
+  const [selectedSenderName, setSelectedSenderName] = useState("");
+  const [selectedChat, setSelectedChat] = useState<IFeeds>()
+  //@ts-ignore
+  // const { data: avatar } = useEnsAvatar({chainId: 1, name: 'alice.eth'})
+  // const { data: name} = useEnsName({
+  //   chainId: 80001,
+  //   address: address,
+  // })
+
 
   const createRoom = async () => {
     try {
@@ -61,7 +74,7 @@ const Home = () => {
         encryptedPGPPrivateKey: user?.encryptedPrivateKey as string,
         signer: signer,
       });
-      setPgpDecrpyptedPvtKey(pgpDecrpyptedPvtKey);
+      setPgpDecrpytedPvtKey(pgpDecrpyptedPvtKey);
       const response = await PushAPI.chat.requests({
         account: `eip155:${address}`,
         toDecrypt: true,
@@ -71,6 +84,24 @@ const Home = () => {
       console.log(response);
       setChatRequestsArr(response);
     };
+
+    const fetchChats = async (user: IUser) => {
+      console.log(user, signer, "Inside");
+      const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+        encryptedPGPPrivateKey: user?.encryptedPrivateKey as string,
+        signer: signer,
+      });
+      setPgpDecrpytedPvtKey(pgpDecrpyptedPvtKey);
+      const response = await PushAPI.chat.chats({
+        account: `eip155:${address}`,
+        toDecrypt: true,
+        pgpPrivateKey: pgpDecrpyptedPvtKey,
+        env: ENV.STAGING,
+      });
+      console.log(response);
+      setChatsArr(response);
+    };
+
     const creatingUser = async () => {
       try {
         let user;
@@ -79,6 +110,7 @@ const Home = () => {
           //@ts-ignore
           account: address,
         });
+      console.log(signer, "I was called here")
         console.log(user);
         if (!user) {
           user = await PushAPI.user.create({
@@ -89,6 +121,7 @@ const Home = () => {
           console.log(user);
         }
         fetchChatRequests(user);
+        fetchChats(user);
         context.setUser(user);
       } catch (error) {
         console.log(error);
@@ -182,6 +215,20 @@ const Home = () => {
     console.log(response);
   };
 
+  const handleChatClick = async(sender: string, chat: IFeeds) => {
+    const streamerData: IStreamerData = await context.contract.addToStreamer(sender);
+    const streamerName: string = streamerData.name;
+    console.log(streamerName)
+    if(streamerName==""){
+      setSelectedSenderName(sender);
+    }else{
+      setSelectedSenderName(streamerName);
+    }
+    setSelectedSender(sender);
+    setSelectedChat(chat);
+    setOpenChat(true);
+  };
+
   return (
     <div className="flex flex-col justify-center items-center">
       <LoadingModal isOpen={loading}></LoadingModal>
@@ -190,8 +237,10 @@ const Home = () => {
           isOpen={openChat}
           setOpenChat={setOpenChat}
           sender={address}
-          receiver={streamerData?.streamerAdd}
-          receiverName={streamerData?.name}
+          receiver={selectedSender}
+          receiverName={selectedSenderName}
+          pgpDecryptedPvtKey={pgpDecrpytedPvtKey}
+          selectedChat={selectedChat}
         ></ChatModal>
       )}
       <Navbar></Navbar>
@@ -200,12 +249,30 @@ const Home = () => {
           <span className="font-dieNasty text-[2rem] text-white mb-4">
             Inbox
           </span>
+          <div className="flex flex-col justify-center items-center w-full h-auto my-2 mb-4">
+            {chatsArr?.map((chat: IFeeds, index: number) => (
+              <>
+                <div
+                  key={index}
+                  className="w-[80%] h-[2rem] cursor-pointer rounded-md bg-darkRed flex flex-row justify-center items-center mb-3 font-spotify text-[1rem] text-white"
+                  onClick={() => {
+                    handleChatClick(trimString(chat.did), chat);
+                    // console.log(name,avatar)
+                  }}
+                >
+                  <span className="mt-1">
+                    {getEllipsisTxt(trimString(chat.did), 4)}
+                  </span>
+                </div>
+              </>
+            ))}
+          </div>
           {chatRequestsArr?.length == 0 ? (
             <span className="font-spotify text-[1rem] text-white">
               There are no chat requests
             </span>
           ) : (
-            <div className="w-[90%] h-[2rem]flex flex-col justify-start items-center">
+            <div className="w-[90%] h-[2rem] flex flex-col justify-start items-center">
               {chatRequestsArr?.map((chatReq: IFeeds, index: number) => (
                 <div
                   key={index}
@@ -220,7 +287,7 @@ const Home = () => {
                     className="ml-3 cursor-pointer"
                     onClick={() => {
                       approveChatReq(trimString(chatReq.did));
-                      setOpenChat(true);
+                      handleChatClick(trimString(chatReq.did), chatReq);
                     }}
                   >
                     <DoneIcon color="success"></DoneIcon>

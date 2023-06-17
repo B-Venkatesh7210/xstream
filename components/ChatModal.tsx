@@ -8,6 +8,7 @@ import { ethers } from "ethers";
 import * as PushAPI from "@pushprotocol/restapi";
 import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 import { IUser } from "../utils/types";
+import { IFeeds, IMessageIPFS } from "@pushprotocol/restapi";
 
 interface ChatModalProps {
   isOpen: boolean;
@@ -15,6 +16,8 @@ interface ChatModalProps {
   sender: string | undefined;
   receiver: string | undefined;
   receiverName: string | undefined;
+  pgpDecryptedPvtKey?: any;
+  selectedChat?: IFeeds | undefined;
 }
 
 const ChatModal: React.FC<ChatModalProps> = ({
@@ -23,68 +26,62 @@ const ChatModal: React.FC<ChatModalProps> = ({
   sender,
   receiver,
   receiverName,
+  pgpDecryptedPvtKey,
+  selectedChat,
 }) => {
   const context: any = useContext(Context);
   const { data: signer, isError } = useSigner();
   const { address } = useAccount();
   const [message, setMessage] = useState<string>();
   const [disabled, setDisabled] = useState<boolean>(true);
-
-  // useEffect(() => {
-  //   const creatingUser = async () => {
-  //     try {
-  //       const user = await PushAPI.user.get({
-  //         env: ENV.STAGING,
-  //         //@ts-ignore
-  //         account: address,
-  //       });
-  //       console.log(user);
-  //       setUser(user);
-  //       if (!user) {
-  //         const user = await PushAPI.user.create({
-  //           //@ts-ignore
-  //           signer: signer, // ethers.js signer
-  //           env: ENV.STAGING,
-  //         });
-  //         console.log(user);
-  //         setUser(user);
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   if (isOpen) {
-  //     console.log(disabled)
-  //     creatingUser();
-  //   }
-  // }, [isOpen]);
+  const [chatMessagesArr, setChatMessagesArr] = useState<IMessageIPFS[]>();
 
   useEffect(() => {
-    console.log(context.user, "Hello")
+    const fetchChatHistory = async () => {
+      const conversationHash = await PushAPI.chat.conversationHash({
+        account: `eip155:${sender}`,
+        conversationId: `eip155:${receiver}`, // receiver's address or chatId of a group
+        env: ENV.STAGING,
+      });
+      console.log(conversationHash);
+      const chatHistory = await PushAPI.chat.history({
+        threadhash: conversationHash.threadHash,
+        account: `eip155:${sender}`,
+        limit: 20,
+        toDecrypt: true,
+        pgpPrivateKey: pgpDecryptedPvtKey,
+        env: ENV.STAGING,
+      });
+      console.log(chatHistory);
+      setChatMessagesArr(chatHistory);
+    };
+    fetchChatHistory();
+  }, []);
+
+  useEffect(() => {
     if (!message) {
       setDisabled(true);
-    }
-    else{
+    } else {
       setDisabled(false);
     }
   }, [message]);
 
-  // const sendChat = async () => {
-  //   const pgpDecryptedPvtKey = await PushAPI.chat.decryptPGPKey({
-  //     encryptedPGPPrivateKey: context.user?.encryptedPrivateKey as string,
-  //     signer: signer,
-  //   });
-  //   const response = await PushAPI.chat.send({
-  //     messageContent: message,
-  //     messageType: "Text", // can be "Text" | "Image" | "File" | "GIF"
-  //     receiverAddress: `eip155:${receiver}`,
-  //     //@ts-ignore
-  //     signer: signer,
-  //     pgpPrivateKey: pgpDecryptedPvtKey,
-  //     env: ENV.STAGING,
-  //   });
-  //   console.log(response);
-  // };
+  const sendChat = async () => {
+    const pgpDecryptedPvtKey = await PushAPI.chat.decryptPGPKey({
+      encryptedPGPPrivateKey: context.user?.encryptedPrivateKey as string,
+      signer: signer,
+    });
+    const response = await PushAPI.chat.send({
+      messageContent: message,
+      messageType: "Text", // can be "Text" | "Image" | "File" | "GIF"
+      receiverAddress: `eip155:${receiver}`,
+      //@ts-ignore
+      signer: signer,
+      pgpPrivateKey: pgpDecryptedPvtKey,
+      env: ENV.STAGING,
+    });
+    console.log(response);
+  };
 
   // const fetchChatReq = async () => {
   //   const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
@@ -118,9 +115,7 @@ const ChatModal: React.FC<ChatModalProps> = ({
       <div className=" relative w-[35%] h-[80%] primaryButton rounded-[1.5rem] chatBg flex flex-col justify-start items-center">
         <div className="w-full h-[10%] bg-darkRed rounded-tl-[1.5rem] rounded-tr-[1.5rem] flex flex-col justify-center items-center">
           <span className="font-dieNasty text-[1.6rem]">
-            {receiverName == "venmus"
-              ? getEllipsisTxt(receiver, 6)
-              : receiverName}
+            {receiverName == "" ? getEllipsisTxt(receiver, 6) : receiverName}
           </span>
           <div
             className="absolute right-4 cursor-pointer"
@@ -130,6 +125,15 @@ const ChatModal: React.FC<ChatModalProps> = ({
           >
             <CloseIcon></CloseIcon>
           </div>
+        </div>
+        <div className="w-[90%] h-[80%] py-4 flex flex-col overflow-auto scrollbar-hidden">
+          {chatMessagesArr?.map((chatMessage: IMessageIPFS, index: number) => (
+            <div key={index} className="w-full h-auto flex flex-row justify-end items-center mt-2">
+              <div className="inline-block max-w-[80%] max-h-max bg-lightRed text-white w-auto pl-2 pr-4 py-2 text-[1rem] font-spotify rounded-xl">
+                <span>hello bro</span>
+              </div>
+            </div>
+          ))}
         </div>
         <div className="absolute bottom-2 w-full h-[10%] flex flex-row justify-between items-center px-4">
           <input
@@ -147,20 +151,12 @@ const ChatModal: React.FC<ChatModalProps> = ({
             } font-dieNasty text-white text-[1rem] transition delay-75 flex flex-col justify-center items-center`}
             onClick={() => {
               if (disabled == false) {
-                // sendChat();
+                sendChat();
               }
             }}
           >
             Send
           </div>
-        </div>
-        <div
-          className="text-white"
-          onClick={() => {
-            // fetchChatReq();
-          }}
-        >
-          Hello
         </div>
       </div>
     </Modal>
