@@ -158,35 +158,35 @@ const Room = () => {
   };
 
   const PK = process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY;
-  const Pkey = `0x${PK}`;
-  const _signer = new ethers.Wallet(Pkey);
+  // const Pkey = `0x${PK}`;
+  // const _signer = new ethers.Wallet(Pkey);
 
-  const sendNotification = async (streamerName: string) => {
-    try {
-      const apiResponse = await PushAPI.payloads.sendNotification({
-        signer: _signer,
-        type: 3, // target
-        identityType: 2, // direct payload
-        notification: {
-          title: `Xstream Stream Stopped`,
-          body: `${streamerName} has stopped the stream`,
-        },
-        payload: {
-          title: `Xstream Stream Stopped`,
-          body: `${streamerName} has stopped the stream`,
-          cta: "",
-          img: "",
-        },
-        recipients: `eip155:5:${address}`, // recipient address
-        channel: "eip155:5:0xf4e742253cEF3F03b63876570691303C47bB7c1d", // your channel address
-        env: ENV.STAGING,
-      });
-      console.log(apiResponse);
-      console.log(streamData?.streamer);
-    } catch (error) {
-      console.error("Error: ", error);
-    }
-  };
+  // const sendNotification = async (streamerName: string) => {
+  //   try {
+  //     const apiResponse = await PushAPI.payloads.sendNotification({
+  //       signer: _signer,
+  //       type: 3, // target
+  //       identityType: 2, // direct payload
+  //       notification: {
+  //         title: `Xstream Stream Stopped`,
+  //         body: `${streamerName} has stopped the stream`,
+  //       },
+  //       payload: {
+  //         title: `Xstream Stream Stopped`,
+  //         body: `${streamerName} has stopped the stream`,
+  //         cta: "",
+  //         img: "",
+  //       },
+  //       recipients: `eip155:5:${address}`, // recipient address
+  //       channel: "eip155:5:0xf4e742253cEF3F03b63876570691303C47bB7c1d", // your channel address
+  //       env: ENV.STAGING,
+  //     });
+  //     console.log(apiResponse);
+  //     console.log(streamData?.streamer);
+  //   } catch (error) {
+  //     console.error("Error: ", error);
+  //   }
+  // };
 
   useEffect(() => {
     const eventEmitter1 = context.contract.on(
@@ -221,7 +221,7 @@ const Room = () => {
           console.log("I was called again");
           alert(`The Stream has been stopped.`);
           // const streamerName: string | undefined = streamData?.streamerName;
-          sendNotification(streamerName);
+          // sendNotification(streamerName);
           router.push("/home");
         }
       }
