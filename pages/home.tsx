@@ -42,18 +42,17 @@ const Home = () => {
   const [liveStreams, setLiveStreams] = useState<[]>();
   const [chatRequestsArr, setChatRequestsArr] = useState<IFeeds[]>();
   const [chatsArr, setChatsArr] = useState<IFeeds[]>();
-  const [pgpDecrpytedPvtKey, setPgpDecrpytedPvtKey] = useState();
+  const [pgpDecrpytedPvtKey, setPgpDecrpytedPvtKey] = useState<string>();
   const [openChat, setOpenChat] = useState<boolean>(false);
   const [selectedSender, setSelectedSender] = useState("");
   const [selectedSenderName, setSelectedSenderName] = useState("");
-  const [selectedChat, setSelectedChat] = useState<IFeeds>()
+  const [selectedChat, setSelectedChat] = useState<IFeeds>();
   //@ts-ignore
-  // const { data: avatar } = useEnsAvatar({chainId: 1, name: 'alice.eth'})
-  // const { data: name} = useEnsName({
-  //   chainId: 80001,
-  //   address: address,
-  // })
-
+  const { data: avatar } = useEnsAvatar({chainId: 1, name: 'venmus.eth'})
+  const { data: name} = useEnsName({
+    chainId: 1,
+    address: address,
+  })
 
   const createRoom = async () => {
     try {
@@ -70,7 +69,7 @@ const Home = () => {
   useEffect(() => {
     const fetchChatRequests = async (user: IUser) => {
       console.log(user, signer, "Inside");
-      const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+      const pgpDecrpyptedPvtKey: string = await PushAPI.chat.decryptPGPKey({
         encryptedPGPPrivateKey: user?.encryptedPrivateKey as string,
         signer: signer,
       });
@@ -87,15 +86,17 @@ const Home = () => {
 
     const fetchChats = async (user: IUser) => {
       console.log(user, signer, "Inside");
-      const pgpDecrpyptedPvtKey = await PushAPI.chat.decryptPGPKey({
+      const pgpDecryptedPvtKey: string = await PushAPI.chat.decryptPGPKey({
         encryptedPGPPrivateKey: user?.encryptedPrivateKey as string,
         signer: signer,
       });
-      setPgpDecrpytedPvtKey(pgpDecrpyptedPvtKey);
+      console.log(pgpDecrpytedPvtKey, "I am here");
+      setPgpDecrpytedPvtKey(pgpDecryptedPvtKey);
+      context.setPgpDecrpytedPvtKey(pgpDecryptedPvtKey);
       const response = await PushAPI.chat.chats({
         account: `eip155:${address}`,
         toDecrypt: true,
-        pgpPrivateKey: pgpDecrpyptedPvtKey,
+        pgpPrivateKey: pgpDecryptedPvtKey,
         env: ENV.STAGING,
       });
       console.log(response);
@@ -110,7 +111,7 @@ const Home = () => {
           //@ts-ignore
           account: address,
         });
-      console.log(signer, "I was called here")
+        console.log(signer, "I was called here");
         console.log(user);
         if (!user) {
           user = await PushAPI.user.create({
@@ -215,13 +216,15 @@ const Home = () => {
     console.log(response);
   };
 
-  const handleChatClick = async(sender: string, chat: IFeeds) => {
-    const streamerData: IStreamerData = await context.contract.addToStreamer(sender);
+  const handleChatClick = async (sender: string, chat: IFeeds) => {
+    const streamerData: IStreamerData = await context.contract.addToStreamer(
+      sender
+    );
     const streamerName: string = streamerData.name;
-    console.log(streamerName)
-    if(streamerName==""){
+    console.log(streamerName);
+    if (streamerName == "") {
       setSelectedSenderName(sender);
-    }else{
+    } else {
       setSelectedSenderName(streamerName);
     }
     setSelectedSender(sender);
@@ -239,14 +242,19 @@ const Home = () => {
           sender={address}
           receiver={selectedSender}
           receiverName={selectedSenderName}
-          pgpDecryptedPvtKey={pgpDecrpytedPvtKey}
+          pgpDecryptedPvtKey={context.pgpDecrpytedPvtKey}
           selectedChat={selectedChat}
         ></ChatModal>
       )}
       <Navbar></Navbar>
       <div className="h-[85vh] w-screen flex flex-row justify-between items-center">
         <div className="h-full w-[25%] flex flex-col justify-start items-center pt-10">
-          <span className="font-dieNasty text-[2rem] text-white mb-4">
+          <span
+            className="font-dieNasty text-[2rem] text-white mb-4"
+            onClick={() => {
+              console.log(avatar, name);
+            }}
+          >
             Inbox
           </span>
           <div className="flex flex-col justify-center items-center w-full h-auto my-2 mb-4">

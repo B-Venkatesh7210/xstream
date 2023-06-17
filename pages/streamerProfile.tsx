@@ -117,6 +117,7 @@ const StreamerProfile = () => {
           sender={address}
           receiver={streamerData?.streamerAdd}
           receiverName={streamerData?.name}
+          pgpDecryptedPvtKey={context.pgpDecryptedPvtKey}
         ></ChatModal>
       )}
       <Navbar></Navbar>
@@ -132,7 +133,12 @@ const StreamerProfile = () => {
           </div>
           <div className="h-[70%] w-[40%] flex flex-col justify-start items-start pl-20 py-2">
             <div className="flex flex-col justify-start items-start w-full mb-4">
-              <span className="text-white font-dieNasty text-[1.5rem] mb-2">
+              <span
+                className="text-white font-dieNasty text-[1.5rem] mb-2"
+                onClick={() => {
+                  console.log(context.pgpDecrpytedPvtKey);
+                }}
+              >
                 Name
               </span>
               <DisplayField

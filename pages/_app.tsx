@@ -44,6 +44,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [isStreamer, setIsStreamer] = useState<boolean>(false);
   const [user, setUser] = useState<IUser>()
   const {isDisconnected} = useAccount()
+  const [pgpDecrpytedPvtKey, setPgpDecrpytedPvtKey] = useState();
+
 
   useEffect(() => {
     // its preferable to use env vars to store projectId
@@ -92,7 +94,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           nftContract,
           setNftContract,
           user,
-          setUser
+          setUser,
+          pgpDecrpytedPvtKey,
+          setPgpDecrpytedPvtKey
         }}>
         <Component {...pageProps} />
         </Context.Provider>
