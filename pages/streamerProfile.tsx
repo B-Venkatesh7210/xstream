@@ -117,7 +117,8 @@ const StreamerProfile = () => {
           sender={address}
           receiver={streamerData?.streamerAdd}
           receiverName={streamerData?.name}
-          pgpDecryptedPvtKey={context.pgpDecryptedPvtKey}
+          //@ts-ignore
+          pgpDecryptedPvtKey={pgpDecryptedPvtKey}
         ></ChatModal>
       )}
       <Navbar></Navbar>

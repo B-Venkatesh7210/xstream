@@ -24,6 +24,7 @@ import PrimaryButton from "../components/PrimaryButton";
 import Router from "next/router";
 import HostView from "../components/HostView";
 import PeerView from "../components/PeerView";
+import Modal from "react-modal";
 import Image from "next/image";
 import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
 import * as PushAPI from "@pushprotocol/restapi";
