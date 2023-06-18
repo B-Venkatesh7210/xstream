@@ -189,11 +189,41 @@ const Room = () => {
     }
   };
 
+  const sendNotificationOfSuperChat = async (sender: string, amount: number, message: string) => {
+    try {
+      const apiResponse = await PushAPI.payloads.sendNotification({
+        signer: _signer,
+        type: 3, // target
+        identityType: 2, // direct payload
+        notification: {
+          title: `${getEllipsisTxt(sender,6)} sent you a Super Chat`,
+          body: `${getEllipsisTxt(sender,6)} sent you a Super Chat of ${amount} saying ${message}`,
+        },
+        payload: {
+          title: `${getEllipsisTxt(sender,6)} sent you a Super Chat`,
+          body: `${getEllipsisTxt(sender,6)} sent you a Super Chat of ${amount} saying ${message}`,
+          cta: "",
+          img: "",
+        },
+        recipients: `eip155:5:${address}`, // recipient address
+        channel: "eip155:5:0xf4e742253cEF3F03b63876570691303C47bB7c1d", // your channel address
+        env: ENV.STAGING,
+      });
+      console.log(apiResponse);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
   useEffect(() => {
     const eventEmitter1 = context.contract.on(
       "ChatReceived",
-      (sender: string, message: string) => {
-        console.log(sender, message);
+      (sender: string, message: string, amount: BigNumber) => {
+        console.log(sender, message, amount);
+        const newAmount = parseFloat(amount.toString()) / 10 ** 18;
+        if(newAmount!=0){
+          sendNotificationOfSuperChat(sender, newAmount, message)
+        }
         const getAllChatData = async () => {
           const data = await context.contract.getAllChats(
             router.query.streamId

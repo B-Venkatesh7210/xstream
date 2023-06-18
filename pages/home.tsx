@@ -27,6 +27,8 @@ import { getEllipsisTxt } from "../utils/formatters";
 import DoneIcon from "@mui/icons-material/Done";
 import ChatModal from "../components/ChatModal";
 import { useProvider, useEnsAvatar, useEnsName } from "wagmi";
+import ReplayIcon from "@mui/icons-material/Replay";
+
 
 const Home = () => {
   const context: any = useContext(Context);
@@ -47,12 +49,32 @@ const Home = () => {
   const [selectedSender, setSelectedSender] = useState("");
   const [selectedSenderName, setSelectedSenderName] = useState("");
   const [selectedChat, setSelectedChat] = useState<IFeeds>();
-  //@ts-ignore
-  const { data: avatar } = useEnsAvatar({chainId: 1, name: 'venmus.eth'})
-  const { data: name} = useEnsName({
-    chainId: 1,
-    address: address,
-  })
+  const [fetchedChats, setFetchedChats] = useState<boolean>(false);
+  const [ensName, setEnsName] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function getEnsData(address: string) {
+      const provider = new ethers.providers.JsonRpcProvider(
+        `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+        "mainnet"
+      );
+  
+      try {
+        const EnsName = await provider.lookupAddress(address);
+        const EnsAvatar = await provider.getAvatar(address);
+        console.log(EnsName, EnsAvatar)
+        setEnsName(EnsName);
+        context.setEnsName(EnsName);
+      } catch (error) {
+        console.error("Error fetching ENS data:", error);
+        return { EnsName: "", EnsAvatar: "" };
+      }
+    }
+    if(address){
+      getEnsData(address);
+    }
+  }, [address])
+  
 
   const createRoom = async () => {
     try {
@@ -66,43 +88,45 @@ const Home = () => {
     }
   };
 
+  const handleFetchChatRequests = async () => {
+    console.log(context.user, signer, "Inside");
+    const pgpDecrpyptedPvtKey: string = await PushAPI.chat.decryptPGPKey({
+      encryptedPGPPrivateKey: context.user?.encryptedPrivateKey as string,
+      signer: signer,
+    });
+    setPgpDecrpytedPvtKey(pgpDecrpyptedPvtKey);
+    const response = await PushAPI.chat.requests({
+      account: `eip155:${address}`,
+      toDecrypt: true,
+      pgpPrivateKey: pgpDecrpyptedPvtKey,
+      env: ENV.STAGING,
+    });
+    console.log(response);
+    setChatRequestsArr(response);
+    context.setChatRequestsArr(response);
+  };
+
+  const handleFetchChats = async () => {
+    console.log(context.user, signer, "Inside");
+    const pgpDecryptedPvtKey: string = await PushAPI.chat.decryptPGPKey({
+      encryptedPGPPrivateKey: context.user?.encryptedPrivateKey as string,
+      signer: signer,
+    });
+    console.log(pgpDecrpytedPvtKey, "I am here");
+    setPgpDecrpytedPvtKey(pgpDecryptedPvtKey);
+    context.setPgpDecrpytedPvtKey(pgpDecryptedPvtKey);
+    const response = await PushAPI.chat.chats({
+      account: `eip155:${address}`,
+      toDecrypt: true,
+      pgpPrivateKey: pgpDecryptedPvtKey,
+      env: ENV.STAGING,
+    });
+    console.log(response);
+    setChatsArr(response);
+    context.setChatsArr(response);
+  };
+
   useEffect(() => {
-    const fetchChatRequests = async (user: IUser) => {
-      console.log(user, signer, "Inside");
-      const pgpDecrpyptedPvtKey: string = await PushAPI.chat.decryptPGPKey({
-        encryptedPGPPrivateKey: user?.encryptedPrivateKey as string,
-        signer: signer,
-      });
-      setPgpDecrpytedPvtKey(pgpDecrpyptedPvtKey);
-      const response = await PushAPI.chat.requests({
-        account: `eip155:${address}`,
-        toDecrypt: true,
-        pgpPrivateKey: pgpDecrpyptedPvtKey,
-        env: ENV.STAGING,
-      });
-      console.log(response);
-      setChatRequestsArr(response);
-    };
-
-    const fetchChats = async (user: IUser) => {
-      console.log(user, signer, "Inside");
-      const pgpDecryptedPvtKey: string = await PushAPI.chat.decryptPGPKey({
-        encryptedPGPPrivateKey: user?.encryptedPrivateKey as string,
-        signer: signer,
-      });
-      console.log(pgpDecrpytedPvtKey, "I am here");
-      setPgpDecrpytedPvtKey(pgpDecryptedPvtKey);
-      context.setPgpDecrpytedPvtKey(pgpDecryptedPvtKey);
-      const response = await PushAPI.chat.chats({
-        account: `eip155:${address}`,
-        toDecrypt: true,
-        pgpPrivateKey: pgpDecryptedPvtKey,
-        env: ENV.STAGING,
-      });
-      console.log(response);
-      setChatsArr(response);
-    };
-
     const creatingUser = async () => {
       try {
         let user;
@@ -121,8 +145,6 @@ const Home = () => {
           });
           console.log(user);
         }
-        fetchChatRequests(user);
-        fetchChats(user);
         context.setUser(user);
       } catch (error) {
         console.log(error);
@@ -246,64 +268,85 @@ const Home = () => {
           selectedChat={selectedChat}
         ></ChatModal>
       )}
-      <Navbar></Navbar>
+      <Navbar name={ensName}></Navbar>
       <div className="h-[85vh] w-screen flex flex-row justify-between items-center">
         <div className="h-full w-[25%] flex flex-col justify-start items-center pt-10">
           <span
             className="font-dieNasty text-[2rem] text-white mb-4"
             onClick={() => {
-              console.log(avatar, name);
+
             }}
           >
             Inbox
           </span>
           <div className="flex flex-col justify-center items-center w-full h-auto my-2 mb-4">
-            {chatsArr?.map((chat: IFeeds, index: number) => (
-              <>
+            {fetchedChats ? (
+              <div className="flex flex-col justify-center items-center w-full h-auto">
+                {context.chatsArr?.map((chat: IFeeds, index: number) => (
+                  <>
+                    <div
+                      key={index}
+                      className="w-[80%] h-[2rem] cursor-pointer rounded-md bg-darkRed flex flex-row justify-center items-center mb-3 font-spotify text-[1rem] text-white"
+                      onClick={() => {
+                        handleChatClick(trimString(chat.did), chat);
+                        // console.log(name,avatar)
+                      }}
+                    >
+                      <span className="mt-1">
+                        {getEllipsisTxt(trimString(chat.did), 4)}
+                      </span>
+                    </div>
+                  </>
+                ))}
+                <div className="h-[1rem]"></div>
+                {context.chatRequestsArr?.length == 0 ? (
+                  <span className="font-spotify text-[1rem] text-white">
+                    There are no chat requests
+                  </span>
+                ) : (
+                  <div className="w-[90%] h-[2rem] flex flex-col justify-start items-center">
+                    {context.chatRequestsArr?.map(
+                      (chatReq: IFeeds, index: number) => (
+                        <div
+                          key={index}
+                          className="flex flex-row justify-start items-center w-full h-full my-2"
+                        >
+                          <div className="w-[60%] h-[2rem] rounded-md bg-darkRed flex flex-row justify-center items-center font-spotify text-[1rem] text-white">
+                            <span className="mt-1">
+                              {getEllipsisTxt(trimString(chatReq.did), 4)}
+                            </span>
+                          </div>
+                          <div
+                            className="ml-3 cursor-pointer"
+                            onClick={() => {
+                              approveChatReq(trimString(chatReq.did));
+                              handleChatClick(trimString(chatReq.did), chatReq);
+                            }}
+                          >
+                            <DoneIcon color="success"></DoneIcon>
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-row justify-center items-center text-white text-[1rem] gap-4">
+                <span>Fetch all Chats</span>
                 <div
-                  key={index}
-                  className="w-[80%] h-[2rem] cursor-pointer rounded-md bg-darkRed flex flex-row justify-center items-center mb-3 font-spotify text-[1rem] text-white"
+                  className="cursor-pointer"
                   onClick={() => {
-                    handleChatClick(trimString(chat.did), chat);
-                    // console.log(name,avatar)
+                    handleFetchChats();
+                    handleFetchChatRequests();
+                    setFetchedChats(true);
                   }}
                 >
-                  <span className="mt-1">
-                    {getEllipsisTxt(trimString(chat.did), 4)}
-                  </span>
+                  <ReplayIcon></ReplayIcon>
                 </div>
-              </>
-            ))}
+              </div>
+            )}
           </div>
-          {chatRequestsArr?.length == 0 ? (
-            <span className="font-spotify text-[1rem] text-white">
-              There are no chat requests
-            </span>
-          ) : (
-            <div className="w-[90%] h-[2rem] flex flex-col justify-start items-center">
-              {chatRequestsArr?.map((chatReq: IFeeds, index: number) => (
-                <div
-                  key={index}
-                  className="flex flex-row justify-start items-center w-full h-full my-2"
-                >
-                  <div className="w-[60%] h-[2rem] rounded-md bg-darkRed flex flex-row justify-center items-center font-spotify text-[1rem] text-white">
-                    <span className="mt-1">
-                      {getEllipsisTxt(trimString(chatReq.did), 4)}
-                    </span>
-                  </div>
-                  <div
-                    className="ml-3 cursor-pointer"
-                    onClick={() => {
-                      approveChatReq(trimString(chatReq.did));
-                      handleChatClick(trimString(chatReq.did), chatReq);
-                    }}
-                  >
-                    <DoneIcon color="success"></DoneIcon>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
         <div className="h-full w-[75%] flex flex-col justify-start items-center">
           <div className="h-[15%] w-[80%] flex flex-row justify-around items-center mt-4">

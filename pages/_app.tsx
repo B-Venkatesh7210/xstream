@@ -5,14 +5,14 @@ import { useHuddle01 } from "@huddle01/react";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig, useAccount, goerli, useProvider } from "wagmi";
-import { filecoinHyperspace, polygonMumbai, mainnet } from "wagmi/chains";
+import { filecoinHyperspace, polygonMumbai, mainnet} from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import Context from "../context";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import contractConfig from "../contractConfig";
 import nftContractConfig from "../nftContractConfig";
-import { IUser } from "../utils/types";
+import { IUser, IFeeds } from "../utils/types";
 
 const { chains, provider } = configureChains(
   // [filecoinHyperspace],
@@ -45,6 +45,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [user, setUser] = useState<IUser>()
   const {isDisconnected} = useAccount()
   const [pgpDecrpytedPvtKey, setPgpDecrpytedPvtKey] = useState();
+  const [chatRequestsArr, setChatRequestsArr] = useState<IFeeds[]>();
+  const [chatsArr, setChatsArr] = useState<IFeeds[]>();
+  const [ensName, setEnsName] = useState<string | null>(null)
 
 
   useEffect(() => {
@@ -96,7 +99,13 @@ function MyApp({ Component, pageProps }: AppProps) {
           user,
           setUser,
           pgpDecrpytedPvtKey,
-          setPgpDecrpytedPvtKey
+          setPgpDecrpytedPvtKey,
+          chatsArr,
+          setChatsArr,
+          chatRequestsArr,
+          setChatRequestsArr,
+          ensName,
+          setEnsName
         }}>
         <Component {...pageProps} />
         </Context.Provider>

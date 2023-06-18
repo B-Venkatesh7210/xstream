@@ -9,6 +9,7 @@ import CameraOff from "@mui/icons-material/NoPhotography";
 import Image from "next/image";
 import FilecoinLogo from "../public/assets/logos/Filecoin Logo.png";
 import LoadingModal from "./LoadingModal";
+import { NFTStorage, File, Blob } from "nft.storage";
 
 const HostView: React.FC<IHostViewProps> = ({
   streamData,
@@ -50,6 +51,11 @@ const HostView: React.FC<IHostViewProps> = ({
   const context: any = useContext(Context);
   const router: any = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
+  const [currentlyRecording, setCurrentlyRecording] = useState<boolean>(false);
+
+  const client = new NFTStorage({
+    token: process.env.NEXT_PUBLIC_NFTSTORAGE_KEY,
+  });
 
   useEffect(() => {
     console.log("camera setting");
@@ -68,6 +74,23 @@ const HostView: React.FC<IHostViewProps> = ({
     setLoading(false);
     router.push("/home");
   };
+
+  const handleUpload = async () => {
+    setLoading(true);
+    const metadata = {
+      recordingUrl: (recordingData as any)?.s3Url,
+    };
+    const metadataJSON = JSON.stringify(metadata);
+    const metadataBlob = new Blob([metadataJSON], { type: "application/json" });
+    const metadataCID = await client.storeBlob(metadataBlob);
+    const txn = await context.contract.saveRecording(
+      metadataCID,
+      streamData?.streamId
+    );
+    await txn.wait();
+    setLoading(false);
+  };
+
   return (
     <div className="h-screen w-screen flex flex-row justify-between items-center px-12">
       <LoadingModal isOpen={loading}></LoadingModal>
@@ -149,29 +172,29 @@ const HostView: React.FC<IHostViewProps> = ({
           <ToggleButton
             h="h-[4rem]"
             w="w-[4rem]"
+            disabled={!currentlyRecording}
+            action={() => {
+              if (currentlyRecording == false) {
+                startRecording(
+                  `https://${window.location.host}/room?roomId=${roomId}&streamId=${streamData?.streamId}`
+                );
+                setCurrentlyRecording(true);
+              } else {
+                stopRecording();
+                handleUpload();
+              }
+            }}
+            type="recording"
+          ></ToggleButton>
+          <ToggleButton
+            h="h-[4rem]"
+            w="w-[4rem]"
             disabled={false}
             action={() => {
               stopStream();
             }}
             type="exit"
           ></ToggleButton>
-          <div
-            className="text-white"
-            onClick={() => {
-              console.log(
-                `https://${window.location.host}/room?roomId=${roomId}&streamId=${streamData?.streamId}`
-              );
-              startRecording(
-                `https://${window.location.host}/room?roomId=${roomId}&streamId=${streamData?.streamId}`
-              );
-            }}
-          >
-            Start Recording
-          </div>
-          <div className="text-white" onClick={stopRecording}>
-            Stop Recording
-          </div>
-          <div className="text-white">inProgress: {inProgress.toString()}</div>
         </div>
       </div>
       <div className="w-[35%] h-[80%] primaryButton rounded-[1.5rem] chatBg flex flex-col justify-evenly items-center px-4 pb-4">
@@ -259,8 +282,6 @@ const HostView: React.FC<IHostViewProps> = ({
 };
 
 export default HostView;
-
-
 
 // import React, { useState, useEffect, useContext } from "react";
 // import { IHostViewProps } from "../utils/types";

@@ -190,10 +190,10 @@ const ChatModal: React.FC<ChatModalProps> = ({
           <span
             className="font-dieNasty text-[1.6rem]"
             onClick={() => {
-              console.log(pgpDecryptedPvtKey);
+              console.log(receiverName);
             }}
           >
-            {receiverName == "" ? getEllipsisTxt(receiver, 6) : receiverName}
+            {receiverName == receiver ? getEllipsisTxt(receiver,6) : receiverName}
           </span>
           <div
             className="absolute right-4 cursor-pointer"

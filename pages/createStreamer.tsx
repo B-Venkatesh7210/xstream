@@ -131,7 +131,7 @@ const CreateStreamer = () => {
   return (
     <div className="flex flex-col justify-center items-center">
       <LoadingModal isOpen={loading}></LoadingModal>
-      <Navbar></Navbar>
+      <Navbar name={context.EnsName}></Navbar>
       <div className="h-[85vh] w-[80%] flex flex-row justify-around items-start pt-[5rem]">
         <div className="h-[28rem] w-[28rem] bg-red-400">
           <Image alt="NFT" src={nftString} width="448" height="448" />

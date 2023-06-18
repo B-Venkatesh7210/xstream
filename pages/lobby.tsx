@@ -95,7 +95,7 @@ const Lobby = () => {
   return (
     <div className="flex flex-col justify-center items-center">
       <LoadingModal isOpen={loading}></LoadingModal>
-      <Navbar></Navbar>
+      <Navbar name={context.EnsName}></Navbar>
       <div className="h-[85vh] w-[90%] flex flex-row justify-between items-center">
         <div className="h-full flex flex-col justify-center items-center">
           <span className="font-dieNasty text-[1.5rem] text-white mb-4">

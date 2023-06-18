@@ -118,10 +118,10 @@ const StreamerProfile = () => {
           receiver={streamerData?.streamerAdd}
           receiverName={streamerData?.name}
           //@ts-ignore
-          pgpDecryptedPvtKey={pgpDecryptedPvtKey}
+          pgpDecryptedPvtKey={context.pgpDecryptedPvtKey}
         ></ChatModal>
       )}
-      <Navbar></Navbar>
+      <Navbar name={context.EnsName}></Navbar>
       {streamerData ? (
         <div className="h-[85vh] w-[90%] flex flex-row justify-evenly items-start pt-[5rem]">
           <div className="h-[28rem] w-[28rem]">
