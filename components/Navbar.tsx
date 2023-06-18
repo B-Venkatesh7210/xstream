@@ -3,6 +3,7 @@ import XstreamLogo from "../public/assets/logos/XSTREAM text Logo.png";
 import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/router";
+import hackFSLogo from "../public/assets/logos/hackFSLogo.jpg";
 
 interface NavbarProps {
   name?: string | null;
@@ -13,9 +14,9 @@ const Navbar: React.FC<NavbarProps> = ({ name }) => {
   return (
     <div className="w-screen h-[15vh] p-4 flex flex-row justify-between items-center">
       <Image
-        src="https://huddle01-assets-frontend.s3.amazonaws.com/Logo/community.png"
+        src={hackFSLogo}
         alt="Vercel Logo"
-        width={250}
+        width={180}
         height={100}
         priority
       />

@@ -10,7 +10,7 @@ import ToggleButton from "./ToggleButton";
 import Router from "next/router";
 import { useRoom, useLobby } from "@huddle01/react/hooks";
 import Image from "next/image";
-import FilecoinLogo from "../public/assets/logos/Filecoin Logo.png";
+import PolygonLogo from "../public/assets/logos/Polygon Matic.png";
 
 const PeerView: React.FC<IPeerViewProps> = ({
   streamData,
@@ -116,7 +116,7 @@ const PeerView: React.FC<IPeerViewProps> = ({
             {streamMoney}
           </span>
           <div className="h-[2rem] w-[2rem] mx-4">
-            <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+            <Image alt="Xstream Text Logo" src={PolygonLogo}></Image>
           </div>
         </div>
         <div className="h-[65%] w-full overflow-scroll scrollbar-hidden flex flex-col justify-start items-center border-lightRed border-b-2 rounded-2xl py-4">
@@ -151,7 +151,7 @@ const PeerView: React.FC<IPeerViewProps> = ({
                       <div className="h-[1.5rem] w-[1.5rem] mb-1">
                         <Image
                           alt="Xstream Text Logo"
-                          src={FilecoinLogo}
+                          src={PolygonLogo}
                         ></Image>
                       </div>
                     </div>
@@ -178,7 +178,7 @@ const PeerView: React.FC<IPeerViewProps> = ({
                       {parseFloat(allChat.amount.toString()) / 10 ** 18}
                     </span>
                     <div className="h-[1rem] w-[1rem] mb-1">
-                      <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+                      <Image alt="Xstream Text Logo" src={PolygonLogo}></Image>
                     </div>
                   </div>
                 </span>
@@ -222,7 +222,7 @@ const PeerView: React.FC<IPeerViewProps> = ({
                 className="appearance-none outline-none font-spotify ml-2 text-[1.2rem] text-black rounded-lg w-[50%] h-full bg-[#CACACA] p-2"
               ></input>
               <div className="h-[3rem] w-[3rem] mt-4 mx-2">
-                <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+                <Image alt="Xstream Text Logo" src={PolygonLogo}></Image>
               </div>
             </div>
             <div

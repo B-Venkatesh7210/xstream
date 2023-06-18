@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { useAccount, useSigner } from "wagmi";
 import { IStreamerData } from "../utils/types";
 import { BigNumber } from "ethers";
-import FilecoinLogo from "../public/assets/logos/Filecoin Logo.png";
+import PolygonLogo from "../public/assets/logos/Polygon Matic.png";
 import LoadingModal from "../components/LoadingModal";
 import ChatModal from "../components/ChatModal";
 
@@ -228,7 +228,7 @@ const StreamerProfile = () => {
                   {streamerBalance}
                 </span>
                 <div className="h-[3rem] w-[3rem] mb-4 mx-2">
-                  <Image alt="Xstream Text Logo" src={FilecoinLogo}></Image>
+                  <Image alt="Xstream Text Logo" src={PolygonLogo}></Image>
                 </div>
               </div>
               <PrimaryButton
